@@ -36,7 +36,7 @@ details.directions ol{margin:0 18px 12px;padding-left:22px}details.directions li
 #practice[data-mode=cls]{--md:#3b7fd1}#practice[data-mode=inh]{--md:#b0533b}#practice[data-mode=plot]{--md:#2d8a6a}#practice[data-mode=vit]{--md:#d9743f}#practice[data-mode=reg]{--md:#86509b}#practice[data-mode=exam]{--md:#4b57d1}
 .toprow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .mode-title{margin:0;font-family:var(--font-display);font-weight:600;font-size:24px}
-.mode-tag{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--md);padding:3px 10px;border-radius:999px;margin-right:10px;vertical-align:middle}
+.mode-tag{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:color-mix(in srgb,var(--md) 70%,#000);padding:3px 10px;border-radius:999px;margin-right:10px;vertical-align:middle}
 .score{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pill{background:var(--accent-soft);border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px}
 .action{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:16px;cursor:pointer;min-height:48px;background:#eef0fe;color:var(--ink);font-family:var(--font-display)}
@@ -61,7 +61,7 @@ details.directions ol{margin:0 18px 12px;padding-left:22px}details.directions li
 .seq{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:56px;padding:10px;border:2px dashed var(--line2);border-radius:14px;background:var(--paper)}
 .seq .step{background:var(--sky);border-radius:10px;padding:8px 12px;font-weight:700}.seq .arrow{color:var(--faint);font-weight:900}
 .seq .step.ok{background:var(--mint);color:var(--mint-ink)}.seq .step.bad{background:var(--rose);color:var(--rose-ink)}
-.seq .ph{color:var(--faint);font-weight:600}
+.seq .ph{color:#5d6579;font-weight:600}
 .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
 .field{display:flex;flex-direction:column;gap:4px;font-weight:700}
 .field input{padding:10px 12px;border:2px solid var(--line2);border-radius:12px;font-size:18px;min-height:48px;width:100%}
@@ -95,7 +95,7 @@ table.ref{border-collapse:collapse;width:100%;font-size:15px}table.ref th,table.
 </head>
 <body>
 <div class="celebrate" id="celebrate"></div><div class="toast" id="toast" role="status"></div>
-<div class="app">
+<div class="app" role="main">
 <section class="hero"><div class="hero-logo mascot" id="mascot" data-mood="normal">
 <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96" fill="#eaf4fb" stroke="#2e2b38" stroke-width="4"/><circle cx="100" cy="100" r="88" fill="none" stroke="#e1b072" stroke-width="3"/><g id="enzbody"><path d="M40 70q0-34 40-34h50q40 0 40 34v48q0 34-40 34H80q-40 0-40-34z" fill="#dfe9fb" stroke="#2e2b38" stroke-width="4"/><path d="M86 64v-24h12v10h14v-10h12v24z" fill="#fff" stroke="#2e2b38" stroke-width="3.5"/><path d="M86 42h12v-12h14v12h12v12H86z" fill="#ffd36b" stroke="#2e2b38" stroke-width="3.5"><animateTransform attributeName="transform" type="translate" values="0 -14;0 0;0 0;0 -14" dur="3s" repeatCount="indefinite"/></path><g id="lgFace"></g><path d="M58 150l-8 14M142 150l8 14" stroke="#2e2b38" stroke-width="5" stroke-linecap="round"/></g><text x="100" y="186" text-anchor="middle" font-family="Fredoka,Nunito,Arial,sans-serif" font-weight="700" font-size="15" fill="#2e2b38">E + S ⚙</text></svg></div>
 <div class="hero-text"><span class="badge">⚙️ Enzyme Engine • ItsDrDan • CHEM 3B</span>
