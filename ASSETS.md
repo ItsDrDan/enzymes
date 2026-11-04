@@ -68,3 +68,14 @@ Make all five on one sheet so he looks identical in each. Cut each to **320 × 3
 - `enzymes/assets/cat-*.webp`, `skillcheck.webp`, `exam.webp` (7)
 - `enzymes/assets/ach-*.webp` (12)
 - `games/assets/games/enzymes.webp` (study hub card, lives in the games repo)
+
+## Round 2 (Health & Clinic expansion): 4 more images
+
+Until these exist, the Health & Clinic tile uses `ach-clinic.webp` and the new achievements use brand-kit stand-ins. Same style, 256 × 256 transparent WebP in `assets/`.
+
+| File | Used for | Subject |
+|---|---|---|
+| `cat-health.webp` | Health & Clinic tile | Enzo wearing a tiny nurse cap, holding a toothbrush in one hand and a stethoscope in the other |
+| `ach-chairside.webp` | Chairside Pro (10 dental hygiene right) | A dental mirror and scaler crossed over a sparkling tooth |
+| `ach-medpass.webp` | Med Pass (10 meds & nursing right) | A pill cup with two capsules and a green check mark |
+| `ach-labs.webp` | Lab Detective (8 lab tests right) | A blood tube in a rack with a magnifying glass and a small "H" flag |
