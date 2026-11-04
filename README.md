@@ -1,12 +1,10 @@
-# Enzyme Engine (CHEM 3B Chapter 11 (enzymes and vitamins))
+# Enzyme Engine (CHEM 3B Chapter 11: Enzymes and Vitamins)
 
-Study game for CHEM 3B Chapter 11 (enzymes and vitamins). Live at https://itsdrdan.github.io/enzymes/ once this repo is published with GitHub Pages (branch `main`, root).
+Study game for CHEM 3B Chapter 11, matched to the Lecture 23–24 enzyme slides. Live at https://itsdrdan.github.io/enzymes/
 
-- `index.html` — the whole game (no build step). Built from the shared engine in ItsDrDan/metabolism (`tools/build_game.py` there assembles
-  `content.js` + `config.json` into `index.html`; edit `content.js` for questions, re-run the builder). Loads the brand kit
-  (`games/brand/itsdrdan.css`, `icons.js`, `embed.js`), `games/track.js` for anonymous stats, and the Exam Practice module from the
-  textbook repo (`textbook/js/fbx.js`, `textbook/css/widget-base.css`, questions from `textbook/bank/enzymes.json`).
-- `meta.json` — study hub card. `logo.svg` — badge used in the hero.
-- `?mode=<id>` opens a mode directly; `?course=3B` is accepted and ignored (3B-only game).
+- `index.html`: the whole game (standalone; no build step). Loads the brand kit (`games/brand/itsdrdan.css`, `icons.js`, `embed.js`), `games/track.js` for anonymous stats, and the Exam Practice module from the textbook repo (`textbook/js/fbx.js`, questions from `textbook/bank/enzymes.json`).
+- 5 main options → 16 topics: Enzyme Basics (key terms, label the enzyme, lock & key vs induced fit, activation energy, specificity), Classify Enzymes (six classes, name clues), Enzyme Activity (read the graph, predict the rate), Inhibitors & Control (spot the inhibitor, regulation, health & dental), Cofactors & Vitamins (cofactors, B vitamins → coenzymes, deficiencies, water vs fat soluble). Plus Skill Check Prep (10 questions → study plan) and Exam Practice.
+- `ASSETS.md`: the art list (mascot Enzo, logo, badges). Stand-ins show until the files exist.
+- Links: `?topic=six,names` opens topics directly; the old `?mode=cls|inh|plot|vit|reg|exam` links still work.
 
 Game design and chemistry by ItsDrDan. Code written with AI assistance (Claude) and checked by the author. CC BY-NC-SA 4.0.
