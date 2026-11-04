@@ -69,7 +69,7 @@ Make all five on one sheet so he looks identical in each. Cut each to **320 × 3
 - `enzymes/assets/ach-*.webp` (12)
 - `games/assets/games/enzymes.webp` (study hub card, lives in the games repo)
 
-## Round 2 (Health & Clinic expansion): 4 more images
+## Round 2 (Health & Clinic expansion): 4 more images (all in, Nov 4, 2026)
 
 Until these exist, the Health & Clinic tile uses `ach-clinic.webp` and the new achievements use brand-kit stand-ins. Same style, 256 × 256 transparent WebP in `assets/`.
 
