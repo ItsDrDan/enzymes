@@ -1,0 +1,24 @@
+{
+  "title": "Enzyme Engine — Enzymes & Vitamins",
+  "author": "Dr. Dan (ItsDrDan)",
+  "course": "CHEM 3B",
+  "description": "Practice CHEM 3B enzymes (Chapter 11) in six modes: Classify the Enzyme (the six classes from a reaction), Spot the Inhibitor (competitive, noncompetitive, irreversible, heavy metals, feedback and denaturation from active-site pictures), Read the Plot (activity versus temperature, pH, substrate and enzyme concentration), Cofactors & Vitamins (B vitamins to coenzymes, deficiency diseases, metal-ion cofactors), Regulation & Clinic (feedback, zymogens, covalent modification, blood enzyme tests, fluoride and disinfectants), and Exam Practice (79 Final Boss enzyme questions).",
+  "icon": "⚙️",
+  "tags": [
+    "chemistry",
+    "CHEM 3B",
+    "biochemistry",
+    "enzymes",
+    "inhibitors",
+    "active site",
+    "activation energy",
+    "cofactors",
+    "coenzymes",
+    "vitamins",
+    "enzyme regulation",
+    "zymogens"
+  ],
+  "version": "1",
+  "status": "working",
+  "logo": "logo.svg"
+}

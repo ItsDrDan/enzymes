@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enzyme Engine • ItsDrDan • CHEM 3B</title>
+<meta name="description" content="CHEM 3B enzyme practice: classify enzymes from their reactions, identify inhibitors from active-site pictures, read activity-vs-temperature, pH and substrate graphs, match vitamins to coenzymes, and work regulation and clinical questions, plus final-exam practice.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='8' y='20' width='48' height='34' rx='10' fill='%23dfe9fb' stroke='%232e2b38' stroke-width='3'/%3E%3Cpath d='M24 24v-10h5v5h6v-5h5v10z' fill='%23fff' stroke='%232e2b38' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f5f6fb;--surface:#fff;--paper:#fffdf9;--ink:#1f2a44;--muted:#4f5a74;--faint:#6f7890;--line:#e3e6f0;--line2:#d5d9e8;--accent:#4b57d1;--accent-d:#3c47b8;--accent-soft:#eef0fe;--mint:#e8f6ef;--mint-ink:#23704f;--mint-line:#a9d9c2;--amber:#fff6e2;--amber-ink:#80601a;--amber-line:#f0dca6;--rose:#fdedf0;--rose-ink:#9c3346;--rose-line:#eab3bd;--lav:#f3effd;--sky:#eaf4fb;--c3B:#86509b;--c3B-bg:#f2e8f7;--r-lg:20px;--r-md:14px;--r-sm:10px;--shadow:0 1px 2px #1f2a440d,0 6px 20px #1f2a440a;--font:Nunito,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--font-display:Fredoka,Nunito,system-ui,sans-serif}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);color:var(--ink);background:linear-gradient(120deg,#f1f5fb 0%,#fff8ef 50%,#f6effa 100%);min-height:100vh;line-height:1.45;font-size:17px}
+.app{max-width:1180px;margin:0 auto;padding:14px 14px 40px}
+button,select,input{font:inherit;color:inherit}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px}
+.hero{display:flex;align-items:center;gap:18px;padding:14px 22px;border-radius:24px;background:linear-gradient(120deg,#fff,#f3f0fb);border:1px solid var(--line);box-shadow:var(--shadow)}
+.hero-logo{width:150px;height:150px;flex:none}.hero-logo svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 6px #0002)}
+.mascot[data-mood=happy] svg,.mascot[data-mood=wow] svg{animation:pop .55s ease}.mascot[data-mood=hmm] svg{animation:shake .5s ease}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.08) rotate(-2deg)}70%{transform:scale(.98) rotate(1.5deg)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.hero h1{margin:4px 0;font-family:var(--font-display);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.05}
+.hero h1 .a{color:#d9743f}.hero h1 .b{color:var(--c3B)}
+.subtitle{margin:0;color:var(--muted);font-size:16px}
+.badge{display:inline-block;background:var(--c3B-bg);color:var(--c3B);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800}
+details.directions{margin:12px 0;border:2px solid #cfc3e6;border-bottom-width:5px;border-radius:18px;background:linear-gradient(120deg,#f6f2ff,#fff6ec)}
+details.directions>summary{list-style:none;cursor:pointer;padding:12px 18px;font-weight:700;font-family:var(--font-display);font-size:19px;display:flex;justify-content:space-between;align-items:center;min-height:48px}
+details.directions>summary::-webkit-details-marker{display:none}
+.sum-hint{font-family:var(--font);font-size:13px;color:var(--faint);font-weight:700}
+details.directions ol{margin:0 18px 12px;padding-left:22px}details.directions li{margin:4px 0}
+.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.mode-btn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border-radius:var(--r-md);border:2px solid var(--line2);background:#fff;cursor:pointer;text-align:left;min-height:84px;transition:transform .12s,border-color .12s}
+.mode-btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.mode-btn.active{border-color:var(--md);background:var(--mb);box-shadow:0 0 0 3px var(--mb)}
+.mode-btn .mode-icon{width:34px;height:34px;color:var(--md)}.mode-btn .mode-icon svg{width:100%;height:100%}
+.mode-name{font-family:var(--font-display);font-weight:600;font-size:17px}.mode-short{font-size:13px;color:var(--muted)}
+.mode-btn[data-mode=cls]{--md:#3b7fd1;--mb:#eaf4fb}.mode-btn[data-mode=inh]{--md:#b0533b;--mb:#fbebe4}.mode-btn[data-mode=plot]{--md:#2d8a6a;--mb:#e8f6ef}.mode-btn[data-mode=vit]{--md:#d9743f;--mb:#fdeee8}.mode-btn[data-mode=reg]{--md:#86509b;--mb:#f2e8f7}.mode-btn[data-mode=exam]{--md:#4b57d1;--mb:#eef0fe}
+#practice{min-width:0;margin-top:6px;border-top:6px solid var(--md,var(--accent))}
+#practice[data-mode=cls]{--md:#3b7fd1}#practice[data-mode=inh]{--md:#b0533b}#practice[data-mode=plot]{--md:#2d8a6a}#practice[data-mode=vit]{--md:#d9743f}#practice[data-mode=reg]{--md:#86509b}#practice[data-mode=exam]{--md:#4b57d1}
+.toprow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.mode-title{margin:0;font-family:var(--font-display);font-weight:600;font-size:24px}
+.mode-tag{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--md);padding:3px 10px;border-radius:999px;margin-right:10px;vertical-align:middle}
+.score{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{background:var(--accent-soft);border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px}
+.action{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:16px;cursor:pointer;min-height:48px;background:#eef0fe;color:var(--ink);font-family:var(--font-display)}
+.action.primary{background:var(--accent);color:#fff}.action.primary:hover{background:var(--accent-d)}
+.action.secondary{background:#f1f2f7}.action.next{background:var(--amber);color:var(--amber-ink)}
+.action:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.prompt{font-size:19px;margin:12px 0 6px}
+.eq{text-align:center;font-size:20px;font-weight:700;padding:12px 14px;background:var(--paper);border:2px solid #e1ebf3;border-radius:14px;line-height:1.6;margin:10px 0;overflow-x:auto;white-space:nowrap}
+.eq .over{display:inline-block;vertical-align:middle;text-align:center;margin:0 10px;font-size:14px;color:var(--muted);line-height:1.1}
+.eq .over b{display:block;font-size:22px;color:var(--ink);line-height:1}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}
+.options.cols1{grid-template-columns:1fr}
+.option{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--line2);background:#fff;cursor:pointer;min-height:54px;font-size:16px}
+.option:hover{border-color:var(--accent)}.option.sel{border-color:var(--accent);background:var(--accent-soft)}
+.option.right{border-color:var(--mint-ink);background:var(--mint)}.option.wrong{border-color:var(--rose-ink);background:var(--rose)}
+.option:disabled{cursor:default}
+.opt-letter{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:900;display:grid;place-items:center;font-size:14px}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tile{border:2px solid var(--line2);background:#fff;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;min-height:48px;font-size:16px}
+.tile:hover{border-color:var(--accent)}.tile:disabled{opacity:.35;cursor:default}
+.seq{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:56px;padding:10px;border:2px dashed var(--line2);border-radius:14px;background:var(--paper)}
+.seq .step{background:var(--sky);border-radius:10px;padding:8px 12px;font-weight:700}.seq .arrow{color:var(--faint);font-weight:900}
+.seq .step.ok{background:var(--mint);color:var(--mint-ink)}.seq .step.bad{background:var(--rose);color:var(--rose-ink)}
+.seq .ph{color:var(--faint);font-weight:600}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.field{display:flex;flex-direction:column;gap:4px;font-weight:700}
+.field input{padding:10px 12px;border:2px solid var(--line2);border-radius:12px;font-size:18px;min-height:48px;width:100%}
+.field input.ok{border-color:var(--mint-ink);background:var(--mint)}.field input.bad{border-color:var(--rose-ink);background:var(--rose)}
+.hintbox{margin-top:10px;padding:10px 14px;border-radius:12px;background:var(--amber);color:var(--amber-ink);display:none;border:1px solid var(--amber-line)}.hintbox.show{display:block}
+.feedback{margin-top:10px;padding:12px 14px;border-radius:12px;display:none;font-size:16px}.feedback.good{display:block;background:var(--mint);color:var(--mint-ink);border:1px solid var(--mint-line)}.feedback.bad{display:block;background:var(--rose);color:var(--rose-ink);border:1px solid var(--rose-line)}
+#fbxHost{display:none;margin-top:12px}#practice[data-mode=exam] #fbxHost{display:block}
+#practice[data-mode=exam] :is(.score,#questionArea,.btn-row,#hintBox,#feedback){display:none!important}
+.footer-note{font-size:14px;color:var(--faint);margin:8px 0 0}
+details.collapsible{margin-top:12px}details.collapsible>summary{cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:19px;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:40px}
+details.collapsible>summary::-webkit-details-marker{display:none}
+.journey-chip{font-family:var(--font);font-size:13px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 10px;font-weight:800}
+.xp-row{display:flex;align-items:center;gap:10px;margin:10px 0;font-weight:800}.xp-track{flex:1;height:14px;border-radius:999px;background:#eceef7;overflow:hidden}.xp-fill{height:100%;background:linear-gradient(90deg,#8fd8c8,#4b57d1);width:0;transition:width .4s}
+.mode-xp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}.mode-xp div{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}.mode-xp b{display:block;font-size:20px}
+.jbadges{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}.jbadge{border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px;color:var(--faint);background:#fafafd}.jbadge.earned{background:var(--mint);color:var(--mint-ink);border-color:var(--mint-line)}.jbadge .bt{font-weight:900;font-size:15px}
+.journey-reset{margin-top:10px;background:none;border:1px solid var(--line2);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:14px}
+table.ref{border-collapse:collapse;width:100%;font-size:15px}table.ref th,table.ref td{border:1px solid var(--line2);padding:6px 8px;text-align:left}table.ref th{background:var(--lav)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;z-index:9;font-weight:700}.toast.show{opacity:1;transform:translate(-50%,0)}
+.celebrate{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:8}.confetti{position:absolute;width:10px;height:14px;border-radius:3px;animation:fall 3.2s linear forwards}@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+.vidlist{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.vidlist a{background:var(--sky);border-radius:999px;padding:6px 12px;text-decoration:none;color:var(--ink);font-weight:700;font-size:14px}
+.dd-credit{display:inline-block;margin-top:6px}
+@media(max-width:700px){.hero{flex-direction:column;text-align:center}.hero-logo{width:120px;height:120px}.mode-title{font-size:20px}.eq{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<link rel="stylesheet" href="https://itsdrdan.github.io/games/brand/itsdrdan.css">
+<link rel="stylesheet" href="https://itsdrdan.github.io/textbook/css/widget-base.css">
+<script src="https://itsdrdan.github.io/games/brand/icons.js"></script>
+<script src="https://itsdrdan.github.io/games/brand/embed.js" defer></script>
+<script src="https://itsdrdan.github.io/games/track.js" defer></script>
+<script src="https://itsdrdan.github.io/textbook/js/fbx.js"></script>
+</head>
+<body>
+<div class="celebrate" id="celebrate"></div><div class="toast" id="toast" role="status"></div>
+<div class="app">
+<section class="hero"><div class="hero-logo mascot" id="mascot" data-mood="normal">
+<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96" fill="#eaf4fb" stroke="#2e2b38" stroke-width="4"/><circle cx="100" cy="100" r="88" fill="none" stroke="#e1b072" stroke-width="3"/><g id="enzbody"><path d="M40 70q0-34 40-34h50q40 0 40 34v48q0 34-40 34H80q-40 0-40-34z" fill="#dfe9fb" stroke="#2e2b38" stroke-width="4"/><path d="M86 64v-24h12v10h14v-10h12v24z" fill="#fff" stroke="#2e2b38" stroke-width="3.5"/><path d="M86 42h12v-12h14v12h12v12H86z" fill="#ffd36b" stroke="#2e2b38" stroke-width="3.5"><animateTransform attributeName="transform" type="translate" values="0 -14;0 0;0 0;0 -14" dur="3s" repeatCount="indefinite"/></path><g id="lgFace"></g><path d="M58 150l-8 14M142 150l8 14" stroke="#2e2b38" stroke-width="5" stroke-linecap="round"/></g><text x="100" y="186" text-anchor="middle" font-family="Fredoka,Nunito,Arial,sans-serif" font-weight="700" font-size="15" fill="#2e2b38">E + S ⚙</text></svg></div>
+<div class="hero-text"><span class="badge">⚙️ Enzyme Engine • ItsDrDan • CHEM 3B</span>
+<h1><span class="a">Enzyme</span> <span class="b">Engine</span></h1>
+<p class="subtitle">Classify enzymes, spot the inhibitor, read the activity graphs, and match every vitamin to its coenzyme.</p></div></section>
+
+<details class="directions" id="howTo"><summary>📘 How to play <span class="sum-hint">Tap to open</span></summary>
+<ol><li><strong>Pick a mode</strong> below.</li><li><strong>Answer</strong>, then press <strong>Check Answer</strong>. Wrong? Try again.</li><li><strong>Stuck?</strong> Hint gives a clue. Show Answer gives no point.</li></ol>
+<p style="margin:0 18px 12px"><strong>Tip:</strong> Most inhibitor questions come down to two things: does the inhibitor look like the substrate (competitive) and can it be removed (reversible)?</p></details>
+<nav class="mode-grid" id="modeGrid" aria-label="Choose a study mode"></nav>
+
+<section class="card" id="practice">
+<div class="toprow"><h2 class="mode-title" id="modeTitle">Classify the Enzyme</h2><div class="score"><span class="pill">Correct: <span id="correct">0</span></span><span class="pill">Streak: <span id="streak">0</span> 🔥</span><span class="pill">Assisted: <span id="assisted">0</span></span><button class="action next" id="nextBtn">New Question ↻</button></div></div>
+<div id="questionArea"></div>
+<div class="btn-row"><button class="action primary" id="checkBtn">Check Answer</button><button class="action secondary" id="hintBtn">Hint</button><button class="action secondary" id="showBtn">Show Answer</button></div>
+<div class="hintbox" id="hintBox"></div><div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+<div id="fbxHost"></div>
+</section>
+
+<details class="card collapsible" id="journey"><summary>🧭 Chemistry Journey <span class="journey-chip" id="jChip">Level 1 • 0 XP</span></summary>
+<div class="xp-row"><span id="xpLevel">Level 1</span><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><span id="xpText">0 / 100 XP</span></div>
+<p class="footer-note">Earn 10 XP for each independent answer (+2 per streak step, up to +10) and 2 XP for a reveal. Saved in this browser only.</p>
+<div class="mode-xp" id="modeXp"></div><div class="jbadges" id="jbadges"></div><button class="journey-reset" id="journeyReset" type="button">Reset progress</button></details>
+
+<details class="card collapsible"><summary>🧠 Reference: enzyme classes, inhibitors, vitamins</summary><table class="ref"><thead><tr><th>Class</th><th>What it does</th><th>Examples</th></tr></thead><tbody><tr><td>Oxidoreductase</td><td>moves H or electrons (NAD<sup>+</sup>, FAD)</td><td>dehydrogenases, oxidases, catalase</td></tr><tr><td>Transferase</td><td>moves a group between molecules</td><td>kinases, aminotransferases, citrate synthase</td></tr><tr><td>Hydrolase</td><td>breaks a bond with water</td><td>lipase, amylase, proteases, phosphatases</td></tr><tr><td>Lyase</td><td>adds/removes across a double bond, no water or ATP</td><td>fumarase, aldolase, decarboxylases, carbonic anhydrase</td></tr><tr><td>Isomerase</td><td>rearranges one molecule</td><td>isomerases, mutases, racemases</td></tr><tr><td>Ligase</td><td>joins two molecules using ATP</td><td>DNA ligase, carboxylases, synthetases</td></tr></tbody></table><p class="footer-note" style="margin-top:10px"><b>Inhibitors:</b> competitive (looks like substrate, active site, overcome by more substrate) · noncompetitive (other site, changes shape, not overcome) · irreversible (covalent: aspirin, penicillin, nerve agents) · heavy metals (bind –SH; irreversible and noncompetitive) · feedback (end product, allosteric). <b>Activity</b> rises with temperature until denaturation (~40 °C for human enzymes), peaks at an optimum pH (pepsin 2, trypsin 8, most others ~7), and plateaus when substrate saturates the active sites.</p><p class="footer-note"><b>B vitamins → coenzymes:</b> B1 TPP · B2 FAD · B3 NAD<sup>+</sup> · B5 CoA · B6 PLP · B7 biotin · B9 THF · B12 cobalamin. Vitamin C: collagen (scurvy). Vitamin K: clotting. Fat-soluble A, D, E, K are stored; water-soluble B and C are not.</p></details>
+
+<details class="card collapsible"><summary>🎥 Learn with Dr. Dan</summary>
+<div class="vidlist"><a href="https://youtu.be/ec1npXqFdDM" target="_blank" rel="noopener">Protein structure (enzymes are proteins) ↗</a><a href="https://youtu.be/IsypcIC7XqA" target="_blank" rel="noopener">LEO goes GER: oxidation &amp; reduction ↗</a><a href="https://www.youtube.com/playlist?list=PLEaxsqCAZKoCKsxdsJLMbZTqSuBQF2z2f" target="_blank" rel="noopener">CHEM 3B playlist ↗</a></div>
+<p class="footer-note">Textbook: <a href="https://chem.libretexts.org/Workbench/CHEM_3B%3A_Introductory_Organic_and_Biochemistry" target="_blank" rel="noopener">Introductory Organic and Biological Chemistry for FCC</a>, Chapter 11 (Enzymes and Vitamins), with the metabolic enzymes of Chapters 13–15.</p></details>
+
+<p class="footer-note">Practice topics follow CHEM 3B Chapter 11 (enzymes, cofactors and vitamins). Practice questions, diagrams and graphs are generated for this game; Exam Practice questions come from Final Boss.</p>
+<p class="footer-note">This game collects anonymous practice stats (no names or student IDs) to help plan new lessons.<br><span class="dd-credit"><strong>Game design and chemistry by ItsDrDan.</strong><br>I used AI (Claude by Anthropic) to help write the code, the way I hope you'll use it: as a tool, while checking every answer and understanding the chemistry and math behind it.</span></p>
+</div>
+<script>
+/* ===== helpers ===== */
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=n=>Math.floor(Math.random()*n),pickOne=a=>a[rnd(a.length)],shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const sub=s=>s.replace(/(?<=[A-Za-z\)\]])(\d+)/g,'<sub>$1</sub>').replace(/\^(\S+)/g,'<sup>$1</sup>');
+function bag(arr){const b={items:arr,left:[]};b.next=()=>{if(!b.left.length)b.left=shuf(b.items);return b.left.pop()};return b}
+function others(all,correct,n){return shuf(all.filter(x=>x!==correct)).slice(0,n)}
+function mc(html,correct,wrongs,why,hint,extra){const opts=shuf([correct,...wrongs]).map(o=>({key:o,html:sub(o)}));return Object.assign({kind:'mc',html,options:opts,answer:correct,why,hint},extra||{})}
+const CO={nadh:'NAD^+ → NADH',fadh:'FAD → FADH2',nadhr:'NADH → NAD^+',nadphr:'NADPH → NADP^+',atp:'ATP → ADP',h2o:'+ H2O',co2:'− CO2',h2oL:'− H2O'};
+
+/* ===== 1. Classify the Enzyme ===== */
+const CLS6=['Oxidoreductase','Transferase','Hydrolase','Lyase','Isomerase','Ligase'];
+const CLSWHY={Oxidoreductase:'moves hydrogens or electrons (look for NAD^+, FAD, O2 or a change in oxidation state)',Transferase:'moves a functional group (phosphate, acetyl, amino, methyl) from one molecule to another',Hydrolase:'breaks a bond by adding water (esters, amides/peptides, glycosidic bonds, phosphate esters)',Lyase:'adds or removes a group across a double bond, or splits a C–C bond, without water or ATP',Isomerase:'rearranges atoms within one molecule (same formula in and out)',Ligase:'joins two molecules using the energy of ATP'};
+const ENZ=[
+ ['Lactate dehydrogenase','pyruvate + NADH + H^+ → lactate + NAD^+','Oxidoreductase'],
+ ['Alcohol dehydrogenase','ethanol + NAD^+ → acetaldehyde + NADH + H^+','Oxidoreductase'],
+ ['Catalase','2 H2O2 → 2 H2O + O2','Oxidoreductase'],
+ ['Succinate dehydrogenase','succinate + FAD → fumarate + FADH2','Oxidoreductase'],
+ ['Glucose oxidase (the glucose test strip)','glucose + O2 → gluconolactone + H2O2','Oxidoreductase'],
+ ['Hexokinase','glucose + ATP → glucose 6-phosphate + ADP','Transferase'],
+ ['Alanine aminotransferase (ALT)','alanine + α-ketoglutarate → pyruvate + glutamate','Transferase'],
+ ['Citrate synthase','acetyl CoA + oxaloacetate → citrate + CoA–SH','Transferase'],
+ ['Creatine kinase (CK)','creatine + ATP → creatine phosphate + ADP','Transferase'],
+ ['Glycogen phosphorylase','glycogen (n) + Pi → glucose 1-phosphate + glycogen (n − 1)','Transferase'],
+ ['Pepsin','protein + H2O → shorter peptides','Hydrolase'],
+ ['Trypsin','peptide + H2O → two peptides (cut after Lys or Arg)','Hydrolase'],
+ ['Pancreatic lipase','triacylglycerol + 2 H2O → monoacylglycerol + 2 fatty acids','Hydrolase'],
+ ['Salivary amylase','starch + H2O → maltose + dextrins','Hydrolase'],
+ ['Lactase','lactose + H2O → glucose + galactose','Hydrolase'],
+ ['Acetylcholinesterase','acetylcholine + H2O → acetate + choline','Hydrolase'],
+ ['Alkaline phosphatase (ALP)','R–O–PO3^2− + H2O → R–OH + HPO4^2−','Hydrolase'],
+ ['Fumarase','fumarate + H2O → malate','Lyase'],
+ ['Aldolase','fructose 1,6-bisphosphate → dihydroxyacetone phosphate + glyceraldehyde 3-phosphate','Lyase'],
+ ['Carbonic anhydrase','CO2 + H2O ⇌ H2CO3','Lyase'],
+ ['Pyruvate decarboxylase (yeast)','pyruvate → acetaldehyde + CO2','Lyase'],
+ ['Enolase','2-phosphoglycerate → phosphoenolpyruvate + H2O','Lyase'],
+ ['Phosphoglucose isomerase','glucose 6-phosphate ⇌ fructose 6-phosphate','Isomerase'],
+ ['Triose phosphate isomerase','dihydroxyacetone phosphate ⇌ glyceraldehyde 3-phosphate','Isomerase'],
+ ['Mutase (phosphoglycerate mutase)','3-phosphoglycerate → 2-phosphoglycerate','Isomerase'],
+ ['Racemase (alanine racemase, bacteria)','L-alanine ⇌ D-alanine','Isomerase'],
+ ['DNA ligase','two DNA fragments + ATP → joined DNA + AMP + PPi','Ligase'],
+ ['Pyruvate carboxylase','pyruvate + CO2 + ATP → oxaloacetate + ADP + Pi','Ligase'],
+ ['Glutamine synthetase','glutamate + NH4^+ + ATP → glutamine + ADP + Pi','Ligase'],
+ ['Acetyl CoA carboxylase','acetyl CoA + CO2 + ATP → malonyl CoA + ADP + Pi','Ligase'],
+];
+const clsBag=bag(ENZ);
+function genCls(){const [e,r,c]=clsBag.next();const wrongs=others(CLS6,c,3);
+ return mc(`<p class="prompt">Which of the six enzyme classes is <b>${esc(e)}</b>?</p><div class="eq" style="white-space:normal">${sub(esc(r))}</div>`,c,wrongs,`<b>${c}</b>: ${CLSWHY[c]}.`,'Name the suffix clues: -ase after what? Then ask: hydrogens moved? a group transferred? water used? a double bond made/broken with no water or ATP? atoms rearranged? ATP used to join?')}
+
+/* ===== 2. Inhibitor ID (active-site pictures) ===== */
+function enzSVG(kind){ // kind: normal | competitive | noncompetitive | irreversible | denatured
+ const E='#dfe9fb',EL='#2e2b38',cap=t=>`<text x="130" y="162" text-anchor="middle" font-size="13" font-weight="700" fill="${EL}">${t}</text>`;
+ const body=`<rect x="30" y="50" width="200" height="90" rx="30" fill="${E}" stroke="${EL}" stroke-width="3"/>`;
+ const slot=`<path d="M105 50v28h10v-12h30v12h10V50" fill="#fff" stroke="${EL}" stroke-width="3"/>`;
+ const slotBent=`<path d="M105 50v16h14v-8h22v8h14V50" fill="#fff" stroke="${EL}" stroke-width="3"/>`;
+ const piece=(x,y,col,lab)=>`<path d="M${x} ${y}h50v48h-10v-12h-30v12h-10z" fill="${col}" stroke="${EL}" stroke-width="3" stroke-linejoin="round"/><text x="${x+25}" y="${y+24}" text-anchor="middle" font-size="13" font-weight="800" fill="${EL}">${lab}</text>`;
+ let g='';
+ if(kind==='normal')g=body+slot+piece(105,30,'#ffd36b','S')+cap('Substrate fits the active site');
+ if(kind==='competitive')g=body+slot+piece(105,30,'#f08c8c','I')+piece(28,2,'#ffd36b','S')+`<path d="M82 40q14 2 22 10" fill="none" stroke="#9c3346" stroke-width="3" stroke-dasharray="4 4"/><path d="M100 46l6 6-8 1z" fill="#9c3346"/>`+cap('A look-alike is sitting in the active site');
+ if(kind==='noncompetitive')g=body+slotBent+piece(150,0,'#ffd36b','S')+`<circle cx="214" cy="98" r="14" fill="#b9a3e6" stroke="${EL}" stroke-width="3"/><text x="214" y="103" text-anchor="middle" font-size="13" font-weight="800" fill="${EL}">I</text><path d="M160 48l-6 6M114 46l-6-6" stroke="#9c3346" stroke-width="3" stroke-linecap="round"/>`+cap('Binds elsewhere; the site changed shape');
+ if(kind==='irreversible')g=body+slot+piece(105,30,'#f08c8c','I')+`<path d="M130 78v10" stroke="#9c3346" stroke-width="6" stroke-linecap="round"/><text x="175" y="30" font-size="12" font-weight="700" fill="#9c3346">covalent bond</text><path d="M172 32l-30 36" stroke="#9c3346" stroke-width="2" stroke-dasharray="3 3"/>`+cap('Bonded into the active site for good');
+ if(kind==='denatured')g=`<path d="M36 118c20-50 30 10 50-30s30 40 50-10 30 30 50-20 20 30 36 0" fill="none" stroke="${EL}" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 0"/><path d="M36 118c20-50 30 10 50-30s30 40 50-10 30 30 50-20 20 30 36 0" fill="none" stroke="${E}" stroke-width="4" stroke-linecap="round"/>`+piece(170,4,'#ffd36b','S')+cap('Unfolded: no active site is left');
+ return `<svg viewBox="0 0 260 170" width="330" style="max-width:100%;display:block;margin:6px auto" role="img" aria-label="${kind} enzyme diagram">${g}</svg>`}
+const INH=[
+ {k:'competitive',pic:'competitive',s:'The inhibitor has nearly the same shape as the substrate and sits in the active site. Adding a lot more substrate restores the enzyme&rsquo;s full speed.',a:'Competitive, reversible',why:'A competitive inhibitor resembles the substrate and competes for the active site; flooding the enzyme with substrate out-competes it. Example: ethanol or fomepizole treating methanol poisoning; sulfa drugs mimicking PABA in bacteria.'},
+ {k:'noncompetitive',pic:'noncompetitive',s:'The inhibitor binds to a spot away from the active site and distorts the enzyme&rsquo;s shape. Adding more substrate does not restore the activity.',a:'Noncompetitive, reversible (binds away from the active site)',why:'A noncompetitive inhibitor does not look like the substrate and does not compete with it; it changes the enzyme&rsquo;s shape from a distance. More substrate cannot overcome it.'},
+ {k:'irreversible',pic:'irreversible',s:'The inhibitor forms a covalent bond with a serine in the active site; the enzyme never recovers.',a:'Irreversible',why:'A covalent bond does not come off on its own. Aspirin acetylates cyclooxygenase; penicillin bonds to the bacterial transpeptidase; nerve agents and organophosphate insecticides bond to acetylcholinesterase.'},
+ {k:'heavy',pic:'noncompetitive',s:'Hg<sup>2+</sup> or Pb<sup>2+</sup> ions bind to –SH groups on cysteine residues scattered over the enzyme, changing its shape so it stops working, and the metal does not let go.',a:'Heavy-metal poisoning: irreversible and noncompetitive',why:'Heavy metals bind sulfhydryl groups away from the active site (noncompetitive) and essentially permanently (irreversible). Treatment uses chelators that pull the metal off.'},
+ {k:'denatured',pic:'denatured',s:'The enzyme was heated to 70 &deg;C; its hydrogen bonds and hydrophobic clusters broke and the chain unfolded.',a:'Denaturation (not an inhibitor; the protein lost its shape)',why:'Heat, extreme pH, alcohols and detergents unfold the protein. There is no active site left to inhibit; this is denaturation, usually irreversible for a large enzyme.'},
+ {k:'feedback',pic:'noncompetitive',s:'The final product of a five-step pathway binds the first enzyme at a regulatory site and slows the whole pathway down when the product is plentiful.',a:'Feedback (allosteric) inhibition',why:'The end product is an allosteric regulator of the first committed enzyme: binding away from the active site turns the pathway down when enough product has been made, and releases it when the product is used up. Isoleucine inhibiting threonine deaminase is the textbook case.'},
+];
+const inhBag=bag(INH);
+function genInh(){const x=inhBag.next();const wrongs=others(INH.map(i=>i.a),x.a,3);
+ return mc(`<p class="prompt">What kind of inhibition (or loss of activity) is this?</p>${enzSVG(x.pic)}<p>${x.s}</p>`,x.a,wrongs,x.why,'Two questions: does the inhibitor resemble the substrate and sit in the active site? Can it be removed (reversible) or is it bonded for good?',{cols:1})}
+
+/* ===== 3. Read the Plot ===== */
+function plotSVG(kind,mark){ // kind: temp | ph | subs | enz ; returns svg with axes and curve
+ const W=320,H=214,L=44,B=160;let path='',xl='',yl='Reaction rate',extra='';
+ const pts=[];
+ if(kind==='temp'){xl='Temperature (°C)';for(let i=0;i<=60;i++){const x=i*1.5;const y=Math.exp(-Math.pow((x-37)/14,2))*(x<37?1:1)*(x>45?Math.exp(-(x-45)/3):1);pts.push([x,y])}}
+ if(kind==='ph'){xl='pH';for(let i=0;i<=140;i++){const x=i/10;pts.push([x,Math.exp(-Math.pow((x-mark.opt)/1.2,2))])}}
+ if(kind==='subs'){xl='Substrate concentration [S]';for(let i=0;i<=100;i++){const x=i;pts.push([x,x/(x+12)])}}
+ if(kind==='enz'){xl='Enzyme concentration [E] (excess substrate)';for(let i=0;i<=100;i++){pts.push([i,i/100])}}
+ const xmax=pts[pts.length-1][0],ymax=1.02;
+ const X=x=>L+(x/xmax)*(W-L-14),Y=y=>B-(y/ymax)*(B-20);
+ path=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
+ if(kind==='temp')extra=`<text x="${X(37)}" y="${B+16}" font-size="11" text-anchor="middle" fill="#4f5a74">37</text><line x1="${X(37)}" y1="${B}" x2="${X(37)}" y2="${Y(1)}" stroke="#aaa" stroke-dasharray="3 3"/>`;
+ if(kind==='ph')extra=[2,4,6,8,10,12].map(v=>`<text x="${X(v)}" y="${B+16}" font-size="11" text-anchor="middle" fill="#4f5a74">${v}</text>`).join('')+`<line x1="${X(mark.opt)}" y1="${B}" x2="${X(mark.opt)}" y2="${Y(1)}" stroke="#aaa" stroke-dasharray="3 3"/>`;
+ if(kind==='subs')extra=`<line x1="${L}" y1="${Y(1)}" x2="${W-14}" y2="${Y(1)}" stroke="#aaa" stroke-dasharray="3 3"/><text x="${W-16}" y="${Y(1)-4}" font-size="11" text-anchor="end" fill="#4f5a74">maximum rate</text>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="420" style="max-width:100%;display:block;margin:6px auto;background:#fff;border:2px solid #e1ebf3;border-radius:12px" role="img" aria-label="Graph of ${yl} versus ${xl}"><line x1="${L}" y1="${B}" x2="${W-10}" y2="${B}" stroke="#2e2b38" stroke-width="2"/><line x1="${L}" y1="${B}" x2="${L}" y2="12" stroke="#2e2b38" stroke-width="2"/><path d="${path}" fill="none" stroke="#4b57d1" stroke-width="3"/>${extra}<text x="${(L+W)/2}" y="${H-6}" font-size="12" text-anchor="middle" fill="#2e2b38" font-weight="700">${xl}</text><text transform="translate(14 ${(B+12)/2}) rotate(-90)" font-size="12" text-anchor="middle" fill="#2e2b38" font-weight="700">${yl}</text></svg>`}
+const PLOTS=[
+ {kind:'temp',q:'Why does the rate fall off so steeply on the right side of the peak?',a:'Above the optimum the enzyme denatures: its weak interactions break and the active site loses its shape',w:['The substrate runs out at high temperature','High temperature freezes the enzyme in place','The enzyme is used up as a reactant'],why:'Up to about 37–40 °C, more heat means faster collisions and a faster reaction. Beyond that the hydrogen bonds, salt bridges and hydrophobic contacts holding the tertiary structure break, the protein unfolds, and activity collapses (a fever above about 41 °C is dangerous for this reason).',h:'What do heat and hydrogen bonds have to do with each other?'},
+ {kind:'temp',q:'Why does the rate rise on the left side of the curve, from 0 to about 37 °C?',a:'Warmer molecules move faster, so substrate and enzyme collide more often and with more energy',w:['The enzyme is being synthesized faster','Hydrogen bonds get stronger as the temperature rises','Water boils off, concentrating the substrate'],why:'Like any reaction, an enzyme-catalyzed reaction speeds up with temperature, roughly doubling every 10 °C, until the enzyme itself starts to unfold.',h:'Think kinetic energy and collisions.'},
+ {kind:'ph',opt:2,q:'This enzyme works best at pH 2. Where in the body does it most likely work, and what is it?',a:'In the stomach: pepsin, which digests protein in gastric acid',w:['In the small intestine: trypsin','In the mouth: salivary amylase','In the blood: carbonic anhydrase'],why:'Pepsin is built to work in stomach acid (pH 1.5–2); its active site needs its acidic side chains protonated. In the small intestine (pH 8) it denatures. Trypsin, by contrast, has its optimum near pH 8.',h:'Which organ has a pH of 2?'},
+ {kind:'ph',opt:8,q:'This enzyme has its optimum near pH 8. Which enzyme fits, and why would it stop working in the stomach?',a:'Trypsin (small intestine): at pH 2 its acidic and basic side chains change charge, the active site distorts, and it is denatured',w:['Pepsin (stomach), which is protected by mucus','Lactase, which only works in milk','Salivary amylase, which is activated by acid'],why:'Pancreatic enzymes such as trypsin and chymotrypsin are released into the duodenum, where bicarbonate raises the pH to about 8. In strong acid their charged side chains flip, salt bridges and hydrogen bonds break, and the enzyme unfolds.',h:'Pancreatic juice is alkaline.'},
+ {kind:'ph',opt:7,q:'Most enzymes inside cells show a curve like this one, peaking near pH 7. What happens to the rate at pH 4?',a:'It drops sharply: side chains in the active site gain or lose protons, so the substrate no longer binds or reacts properly',w:['It doubles, because acid speeds up every reaction','It is unchanged; pH only matters for digestive enzymes','It rises slowly because the enzyme adapts'],why:'The charges on aspartate, glutamate, histidine and lysine side chains in the active site depend on pH. Change the pH and the charges that bind the substrate and catalyze the reaction change too; far enough from the optimum the enzyme denatures.',h:'Which side chains carry charges, and what does pH do to them?'},
+ {kind:'subs',q:'Why does the curve flatten out at high substrate concentration?',a:'Every active site is occupied (the enzyme is saturated), so adding substrate cannot make the reaction go faster',w:['The substrate starts to inhibit the enzyme','The enzyme is used up','The product reverses the reaction'],why:'At low [S] many active sites sit empty, so more substrate means more collisions and a faster rate. Once every enzyme molecule is busy all the time, the rate reaches its maximum (V<sub>max</sub>); only more enzyme could raise it.',h:'How many substrate molecules can one enzyme hold at once?'},
+ {kind:'subs',q:'A competitive inhibitor is added, then the substrate concentration is raised very high. What happens to the maximum rate?',a:'It is reached anyway: enough substrate out-competes the inhibitor for the active site',w:['It is permanently lowered','It falls to zero','It doubles'],why:'Competitive inhibition can be overcome by substrate, so the plateau (V<sub>max</sub>) is unchanged; the curve just takes longer to get there. A noncompetitive inhibitor lowers the plateau and more substrate does not help.',h:'Competitive means a contest for the same site.'},
+ {kind:'enz',q:'With substrate in excess, the rate rises in a straight line as more enzyme is added. Why?',a:'Each added enzyme molecule adds another active site that is kept busy, so the rate is proportional to enzyme concentration',w:['Enzymes are consumed, so more are always needed','The enzyme raises the temperature of the solution','Enzyme molecules bind to each other to form a faster complex'],why:'When substrate is plentiful, every enzyme molecule works at full speed, so doubling the enzyme doubles the rate. Clinicians use this: the measured rate of a blood sample tells how much of an enzyme (ALT, CK, ALP) has leaked from damaged tissue.',h:'Think of each enzyme as a worker who is never idle.'},
+];
+const plotBag=bag(PLOTS);
+function genPlot(){const x=plotBag.next();return mc(`<p class="prompt">Read the graph.</p>${plotSVG(x.kind,{opt:x.opt||7})}<p><b>${x.q}</b></p>`,x.a,x.w,x.why,x.h,{cols:1})}
+
+/* ===== 4. Cofactors & Vitamins ===== */
+const VIT=[
+ {v:'Niacin (vitamin B3)',co:'NAD^+',use:'hydrogen (hydride) carrier for dehydrogenases, e.g. lactate dehydrogenase, alcohol dehydrogenase',def:'pellagra: dermatitis, diarrhea, dementia'},
+ {v:'Riboflavin (vitamin B2)',co:'FAD',use:'hydrogen carrier for succinate dehydrogenase and the first step of β-oxidation',def:'cracked lips and mouth corners (cheilosis), sore tongue'},
+ {v:'Thiamine (vitamin B1)',co:'Thiamine pyrophosphate (TPP)',use:'decarboxylation of pyruvate and α-ketoglutarate',def:'beriberi; Wernicke–Korsakoff syndrome in alcohol dependence'},
+ {v:'Pantothenic acid (vitamin B5)',co:'Coenzyme A',use:'carries acetyl and acyl groups (acetyl CoA, fatty acyl CoA)',def:'rare; fatigue and numbness'},
+ {v:'Pyridoxine (vitamin B6)',co:'Pyridoxal phosphate (PLP)',use:'transamination and other amino-acid reactions',def:'anemia, irritability, convulsions in infants'},
+ {v:'Biotin (vitamin B7)',co:'Biotin',use:'carboxylation reactions (adding CO2), e.g. pyruvate carboxylase',def:'hair loss, rash; caused by eating many raw egg whites (avidin)'},
+ {v:'Folate (vitamin B9)',co:'Tetrahydrofolate (THF)',use:'one-carbon transfers for making nucleotides and some amino acids',def:'megaloblastic anemia; neural-tube defects in pregnancy'},
+ {v:'Cobalamin (vitamin B12)',co:'Methylcobalamin',use:'methyl transfers; recycling folate; odd-chain fatty acid breakdown',def:'pernicious anemia and nerve damage; needs intrinsic factor from the stomach'},
+ {v:'Vitamin C (ascorbic acid)',co:'Ascorbate (a reducing cofactor, not a true coenzyme)',use:'hydroxylation of proline and lysine in collagen; antioxidant',def:'scurvy: bleeding gums, loose teeth, poor wound healing'},
+ {v:'Vitamin K',co:'Vitamin K (hydroquinone form)',use:'carboxylation of glutamate in blood-clotting factors',def:'bleeding; newborns get a vitamin K shot'},
+];
+const METALS=[['Zn^2+','carbonic anhydrase, alcohol dehydrogenase, carboxypeptidase'],['Mg^2+','every kinase that uses ATP (hexokinase, pyruvate kinase)'],['Fe^2+ / Fe^3+','cytochromes and catalase (heme enzymes)'],['Cu^2+','cytochrome c oxidase, superoxide dismutase'],['Mn^2+','arginase (urea cycle), some superoxide dismutases'],['Ca^2+','lipase activation; blood clotting enzymes']];
+const vitBag=bag(VIT.map(x=>['co',x]).concat(VIT.map(x=>['use',x]),VIT.map(x=>['def',x]),METALS.map(x=>['metal',x])));
+function genVit(){const [kind,x]=vitBag.next();
+ if(kind==='co'){return mc(`<p class="prompt">Which coenzyme is made from <b>${esc(x.v)}</b>?</p>`,x.co,others(VIT.map(v=>v.co),x.co,3),`${x.v} → ${x.co}: ${x.use}.`,'The coenzyme name often hides the vitamin name (thiamine → thiamine pyrophosphate, pyridoxine → pyridoxal phosphate, nicotinamide → NAD+).')}
+ if(kind==='use'){return mc(`<p class="prompt">What does <b>${sub(esc(x.co))}</b> (from ${esc(x.v)}) do?</p>`,x.use,others(VIT.map(v=>v.use),x.use,3),`${x.co}: ${x.use}.`,'Think of the reaction type this coenzyme is written over.',{cols:1})}
+ if(kind==='def'){return mc(`<p class="prompt">A deficiency of <b>${esc(x.v)}</b> causes which condition?</p>`,x.def,others(VIT.map(v=>v.def),x.def,3),`${x.v} deficiency: ${x.def}. The coenzyme it makes, ${x.co}, is needed for: ${x.use}.`,'Match the vitamin to the classic deficiency disease.',{cols:1})}
+ const [m,u]=x;return mc(`<p class="prompt">Which metal-ion cofactor is needed by: <b>${esc(u)}</b>?</p>`,m,others(METALS.map(z=>z[0]),m,3),`${m}: ${u}. Metal ions are inorganic cofactors; organic helper molecules made from vitamins are coenzymes.`,'Kinases need the ion that pairs with ATP; heme enzymes need iron; carbonic anhydrase needs zinc.')}
+
+/* ===== 5. Factors & Regulation ===== */
+const REG=[
+ {q:'A pathway&rsquo;s final product binds the first enzyme at a site away from the active site and slows it down. This is',a:'Feedback inhibition by an allosteric regulator',w:['Competitive inhibition at the active site','Zymogen activation','Denaturation'],why:'Allosteric (“other site”) regulators bind a regulatory site and change the enzyme&rsquo;s shape; when the end product is the regulator, the pathway shuts itself off: negative feedback.',h:'Allo = other. Which site?'},
+ {q:'Pepsinogen, trypsinogen and chymotrypsinogen are secreted as inactive forms. Why?',a:'They are zymogens: inactive precursors activated by cutting off a piece, so they do not digest the cells that make them',w:['They need to be heated before they work','They are denatured until they reach the stomach','They are inhibited by water'],why:'A protease that was active inside the pancreas would digest the pancreas (that is what happens in pancreatitis). Zymogens are switched on by proteolytic cleavage only where they are needed: pepsinogen by stomach acid, trypsinogen by enteropeptidase in the intestine.',h:'What would an active protease do inside the organ that makes it?'},
+ {q:'Glycogen phosphorylase is turned on when a kinase attaches a phosphate to a serine on the enzyme. This control is called',a:'Covalent modification (phosphorylation)',w:['Allosteric inhibition','Competitive inhibition','Zymogen activation'],why:'Adding or removing a phosphate group (by kinases and phosphatases) is a reversible covalent switch; hormones such as glucagon and adrenaline work through it.',h:'A covalent bond is made to the enzyme, but it is reversible.'},
+ {q:'Which change will NOT increase the rate of an enzyme-catalyzed reaction that is already running with excess substrate at 37 °C and its optimum pH?',a:'Adding more substrate',w:['Adding more enzyme','Removing a competitive inhibitor that was present','Adding the missing cofactor if the enzyme was lacking it'],why:'With excess substrate every active site is already busy, so extra substrate changes nothing; more enzyme, or freeing blocked enzyme, does raise the rate.',h:'Saturation.'},
+ {q:'An enzyme lowers the activation energy of a reaction. Which statement is true?',a:'It speeds up the reaction without changing the equilibrium position or ΔG',w:['It makes the reaction release more energy','It shifts the equilibrium toward the products','It is used up and must be replaced after each reaction'],why:'Catalysts provide an easier path (lower E<sub>a</sub>) and are regenerated unchanged. The energy difference between reactants and products, and therefore the equilibrium, is untouched.',h:'A catalyst changes the road, not the destination.'},
+ {q:'The induced-fit model differs from lock-and-key in that',a:'the active site adjusts its shape slightly as the substrate binds, like a glove on a hand',w:['the substrate changes into a different molecule before binding','the enzyme has no active site until it is phosphorylated','any molecule can bind if it is small enough'],why:'Binding is dynamic: the enzyme molds around the substrate and that squeeze helps strain the bonds that will react. Lock-and-key explains specificity; induced fit explains catalysis.',h:'A rigid lock versus a flexible glove.'},
+ {q:'Lactate dehydrogenase, creatine kinase and troponin levels are measured after a suspected heart attack. Why does enzyme activity in blood rise?',a:'Damaged heart cells leak their enzymes into the blood, and the rate measured in a sample is proportional to how much enzyme leaked',w:['The heart makes extra enzymes to repair itself','Blood pH changes activate enzymes already in blood','The enzymes are made by the kidneys in response to stress'],why:'Intracellular enzymes belong inside cells; finding them in plasma means membranes were broken. Because rate is proportional to enzyme concentration (substrate in excess), the activity measures the damage.',h:'Where do these enzymes normally live?'},
+ {q:'The enzyme suffix tells you its job. Which pairing is wrong?',a:'Kinase: adds water to break a bond',w:['Dehydrogenase: removes hydrogen (oxidation)','Lipase: hydrolyzes lipid ester bonds','Isomerase: rearranges a molecule'],why:'A kinase transfers a phosphate from ATP; hydrolases (lipase, amylase, protease, esterase) are the water-using enzymes.',h:'Which word root goes with water?'},
+ {q:'Why does a particular enzyme act on only one substrate or a small family of them?',a:'The active site&rsquo;s shape and its arrangement of polar, charged and nonpolar groups match that substrate',w:['Each enzyme is made of a unique amino acid that bonds only its substrate','Enzymes are too large to touch more than one kind of molecule','The substrate is covalently bonded into the enzyme at birth'],why:'Specificity comes from complementary shape plus complementary intermolecular forces: hydrogen bonds, salt bridges and hydrophobic pockets must all line up.',h:'Shape and forces.'},
+ {q:'Fluoride in toothpaste helps prevent cavities partly by inhibiting enolase in plaque bacteria. What is the result?',a:'Glycolysis in Streptococcus mutans slows, so less lactic acid is produced on the tooth surface',w:['The bacteria make more acid but it is weaker','Fluoride dissolves the bacteria&rsquo;s cell walls','Enolase converts fluoride into fluorapatite'],why:'Enolase is a glycolytic enzyme; blocking it starves the bacteria of ATP and cuts acid output. Fluoride also converts enamel hydroxyapatite to the more acid-resistant fluorapatite.',h:'Which pathway makes the acid?'},
+ {q:'Chlorhexidine mouth rinse and 70% alcohol hand rub both kill bacteria mainly by',a:'denaturing bacterial proteins (including enzymes) and disrupting membranes',w:['competitively inhibiting one bacterial enzyme','providing a cofactor bacteria cannot use','lowering the temperature of the bacteria'],why:'Disinfectants are not specific: they unfold proteins and wreck membranes, so every enzyme stops at once. (Water in 70% alcohol helps it penetrate, which is why 70% beats 100%.)',h:'Non-specific versus specific.'},
+];
+const regBag=bag(REG);
+function genReg(){const x=regBag.next();return mc(`<p class="prompt">${x.q}</p>`,x.a,x.w,x.why,x.h,{cols:1})}
+
+/* ===== modes, state, journey ===== */
+const MODES=[
+ {id:'cls',title:'Classify the Enzyme',short:'Six classes from the reaction',icon:'<rect x="6" y="10" width="36" height="28" rx="6"/><path d="M14 20h20M14 28h12"/>'},
+ {id:'inh',title:'Spot the Inhibitor',short:'Active-site pictures',icon:'<path d="M8 30q0-14 16-14h8q10 0 10 10v6q0 8-10 8H24q-16 0-16-10z"/><path d="M20 16v-6h8v6"/><path d="M34 8l8 8M42 8l-8 8"/>'},
+ {id:'plot',title:'Read the Plot',short:'Temperature, pH, [S], [E]',icon:'<path d="M8 40V8M8 40h32"/><path d="M12 36q10-26 16-26t10 20"/>'},
+ {id:'vit',title:'Cofactors & Vitamins',short:'B vitamins → coenzymes',icon:'<rect x="10" y="8" width="28" height="32" rx="14"/><path d="M10 24h28"/>'},
+ {id:'reg',title:'Regulation & Clinic',short:'Feedback, zymogens, blood tests',icon:'<circle cx="24" cy="24" r="14"/><path d="M24 14v10l7 4"/>'},
+ {id:'exam',title:'Exam Practice',short:'Final-exam style multiple choice',icon:'<rect x="11" y="8" width="26" height="33" rx="4"/><path d="M19 5h10v6H19z"/><path d="m16 20 3 3 5-6M16 31l3 3 5-6M28 21h4M28 32h4"/>'},
+];
+const GEN={cls:genCls,inh:genInh,plot:genPlot,vit:genVit,reg:genReg};
+const JKEY='itsdrdan-enzymes-journey-v1';
+const jBlank=()=>({xp:0,correct:0,assisted:0,best:0,modes:{},badges:{}});
+let journey=jBlank();try{const j=JSON.parse(localStorage.getItem(JKEY));if(j&&typeof j.xp==='number')journey=Object.assign(jBlank(),j)}catch{}
+const jSave=()=>{try{localStorage.setItem(JKEY,JSON.stringify(journey))}catch{}};
+const BADGES=[
+ {id:'first',t:'🌱 First Answer',d:'Answer your first question',ok:j=>j.correct>=1},
+ {id:'ten',t:'🔟 Ten Correct',d:'10 independent answers',ok:j=>j.correct>=10},
+ {id:'fifty',t:'🏅 Fifty Correct',d:'50 independent answers',ok:j=>j.correct>=50},
+ {id:'streak5',t:'🔥 Hot Streak',d:'5 correct in a row',ok:j=>j.best>=5},
+ {id:'streak10',t:'⚡ On Fire',d:'10 correct in a row',ok:j=>j.best>=10},
+ {id:'sorter',t:'🗂️ Sorter',d:'10 correct in Classify the Enzyme',ok:j=>(j.modes.cls||0)>=10},
+ {id:'detective',t:'🔍 Inhibitor Detective',d:'10 correct in Spot the Inhibitor',ok:j=>(j.modes.inh||0)>=10},
+ {id:'reader',t:'📈 Graph Reader',d:'10 correct in Read the Plot',ok:j=>(j.modes.plot||0)>=10},
+ {id:'explorer',t:'🧭 Explorer',d:'Answer in all six modes',ok:j=>MODES.every(m=>(j.modes[m.id]||0)>0)}
+];
+const LGN='#2e2b38';
+const LGFACE={
+ normal:`<circle cx="88" cy="92" r="6" fill="#2e2b38"/><circle cx="118" cy="92" r="6" fill="#2e2b38"/><circle cx="90" cy="90" r="2" fill="#fff"/><circle cx="120" cy="90" r="2" fill="#fff"/><path d="M93 108q10 8 20 0" fill="none" stroke="#2e2b38" stroke-width="4" stroke-linecap="round"/>`,
+ happy:`<path d="M80 94q8-12 16 0M110 94q8-12 16 0" fill="none" stroke="#2e2b38" stroke-width="4" stroke-linecap="round"/><path d="M89 104q14 14 28 0q-4 14-14 14t-14-14z" fill="#f2576c" stroke="#2e2b38" stroke-width="3" stroke-linejoin="round"/>`,
+ wow:`<circle cx="88" cy="92" r="9" fill="#2e2b38"/><circle cx="118" cy="92" r="9" fill="#2e2b38"/><circle cx="91" cy="89" r="3" fill="#fff"/><circle cx="121" cy="89" r="3" fill="#fff"/><ellipse cx="103" cy="112" rx="7" ry="9" fill="#2e2b38"/>`,
+ hmm:`<circle cx="88" cy="92" r="6" fill="#2e2b38"/><circle cx="118" cy="92" r="6" fill="#2e2b38"/><path d="M80 82l14 4M126 82l-14 4" stroke="#2e2b38" stroke-width="3" stroke-linecap="round"/><path d="M93 112q10-6 20 0" fill="none" stroke="#2e2b38" stroke-width="4" stroke-linecap="round"/>`
+};
+let mascotT=0;function mascot(kind,hold){const m=$('mascot'),f=$('lgFace');kind=kind||'normal';f.innerHTML=LGFACE[kind]||LGFACE.normal;m.dataset.mood='';void m.offsetWidth;m.dataset.mood=kind;clearTimeout(mascotT);if(hold)mascotT=setTimeout(()=>mascot('normal'),hold)}
+let toastT=0;function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2600)}
+function renderJourney(){const lvl=Math.floor(journey.xp/100)+1,into=journey.xp%100;$('jChip').textContent=`Level ${lvl} • ${journey.xp} XP`;$('xpLevel').textContent='Level '+lvl;$('xpFill').style.width=into+'%';$('xpText').textContent=into+' / 100 XP';
+ $('modeXp').innerHTML=MODES.map(m=>`<div><b>${journey.modes[m.id]||0}</b>${m.title}</div>`).join('');
+ $('jbadges').innerHTML=BADGES.map(b=>`<div class="jbadge ${journey.badges[b.id]?'earned':''}"><div class="bt">${b.t}</div>${b.d}</div>`).join('')}
+function awardXP(assisted){const before=Math.floor(journey.xp/100);if(assisted){journey.xp+=2;journey.assisted++}else{journey.xp+=10+Math.min(state.streak,5)*2;journey.correct++;journey.modes[state.mode]=(journey.modes[state.mode]||0)+1;journey.best=Math.max(journey.best,state.streak)}
+ BADGES.forEach(b=>{if(!journey.badges[b.id]&&b.ok(journey)){journey.badges[b.id]=1;toast('Badge earned: '+b.t)}});if(Math.floor(journey.xp/100)>before)toast('Level up! You reached level '+(Math.floor(journey.xp/100)+1));jSave();renderJourney()}
+const state={mode:'cls',q:null,selected:null,done:false,revealed:false,correct:0,streak:0,assisted:0};
+function buildModes(){$('modeGrid').innerHTML=MODES.map(m=>`<button class="mode-btn ${m.id===state.mode?'active':''}" data-mode="${m.id}" aria-pressed="${m.id===state.mode}"><span class="mode-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m.icon}</svg></span><span class="mode-name">${m.title}</span><span class="mode-short">${m.short}</span></button>`).join('');
+ $('modeGrid').querySelectorAll('.mode-btn').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;$('modeGrid').querySelectorAll('.mode-btn').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b)});nextQ()})}
+function fb(k,h){const f=$('feedback');f.className='feedback '+k;f.innerHTML=h}
+function nextQ(){['checkBtn','hintBtn','showBtn'].forEach(id=>$(id).disabled=false);if(state.mode==='exam'){examEnter();return}
+ const q=GEN[state.mode]();mascot('normal');state.q=q;state.selected=null;state.done=false;state.revealed=false;$('hintBox').className='hintbox';$('hintBox').textContent='';fb('','');
+ $('modeTitle').innerHTML='<span class="mode-tag">Mode</span>'+esc(MODES.find(m=>m.id===state.mode).title);$('practice').dataset.mode=state.mode;
+ const area=$('questionArea');
+ if(q.kind==='mc'){area.innerHTML=q.html+`<div class="options ${q.cols===1?'cols1':''}" role="group" aria-label="Answer choices">${q.options.map((o,i)=>`<button type="button" class="option" data-key="${esc(o.key)}" aria-pressed="false"><span class="opt-letter">${'ABCD'[i]}</span><span>${o.html}</span></button>`).join('')}</div>`;
+  area.querySelectorAll('.option').forEach(b=>b.onclick=()=>{if(state.done)return;state.selected=b.dataset.key;area.querySelectorAll('.option').forEach(x=>{x.classList.toggle('sel',x===b);x.setAttribute('aria-pressed',x===b)})})}
+ else{area.innerHTML=q.html;q.mount()}
+ updateStats();window.scrollTo({top:Math.max(0,$('practice').getBoundingClientRect().top+window.scrollY-10),behavior:'smooth'})}
+function updateStats(){$('correct').textContent=state.correct;$('streak').textContent=state.streak;$('assisted').textContent=state.assisted}
+function ddLog(ok){try{const q=state.q;if(!q||q.ddLogged||!window.ddTrack)return;q.ddLogged=1;const m=MODES.find(x=>x.id===state.mode);ddTrack({game:'enzymes',course:'3B',mode:'Practice',topic:m?m.title:state.mode,correct:!!ok})}catch(e){}}
+function finish(){ddLog(!state.revealed&&!state.q.missed);state.done=true;['checkBtn','hintBtn','showBtn'].forEach(id=>$(id).disabled=true);const q=state.q;
+ if(q.kind==='mc')$('questionArea').querySelectorAll('.option').forEach(b=>{b.disabled=true;if(b.dataset.key===q.answer)b.classList.add('right')});else if(q.lock)q.lock();
+ if(state.revealed){state.assisted++;state.streak=0;awardXP(true);mascot('normal');fb('good','👀 '+(q.kind==='mc'?'<b>'+sub(esc(q.answer))+'.</b> ':'')+q.why+'<br><small>Assisted: this question earns no point. Try the next one on your own.</small>')}
+ else{state.correct++;state.streak++;awardXP(false);confetti();mascot(state.streak>=3?'wow':'happy',3500);fb('good','✅ Correct! '+q.why)}
+ updateStats();$('nextBtn').focus()}
+function check(){if(state.done)return;const q=state.q;
+ if(q.kind==='mc'){if(!state.selected){fb('bad','👆 Tap an answer first, then press Check Answer.');return}
+  if(state.selected===q.answer)return finish();q.missed=true;const b=$('questionArea').querySelector(`.option[data-key="${CSS.escape(state.selected)}"]`);b.classList.remove('sel');b.classList.add('wrong');b.disabled=true;state.selected=null;state.streak=0;mascot('hmm',2200);fb('bad','🔎 Not quite. Try again! Stuck? Tap Hint.');return}
+ const r=q.check();if(r.ok===null){fb('bad','👆 '+r.msg);return}if(r.ok)return finish();q.missed=true;state.streak=0;mascot('hmm',2200);fb('bad','🔎 '+r.msg)}
+function hint(){if(state.done)return;const h=$('hintBox');h.innerHTML='💡 '+state.q.hint;h.className='hintbox show'}
+function show(){if(state.done)return;state.revealed=true;if(state.q.kind==='mc')state.selected=state.q.answer;else state.q.revealI();finish()}
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const box=$('celebrate'),cols=['#ff7d73','#70b7e8','#8fd8c8','#f7c968','#b9a3e6','#f2a8c4'];for(let i=0;i<50;i++){const p=document.createElement('i');p.className='confetti';p.style.left=Math.random()*100+'vw';p.style.top='-20px';p.style.background=cols[i%6];p.style.animationDelay=Math.random()*.5+'s';box.appendChild(p);setTimeout(()=>p.remove(),3600)}}
+
+/* ===== Exam Practice: Final Boss metabolism questions via the shared FBX module (textbook repo) ===== */
+let FBXI=null,FBXLOADING=false;
+function examEnter(){state.q=null;state.done=true;mascot('normal');$('modeTitle').innerHTML='<span class="mode-tag">Mode</span>Exam Practice';$('practice').dataset.mode='exam';
+ if(FBXI||FBXLOADING)return;if(!window.FBX){$('fbxHost').textContent='Exam Practice could not load. Try reloading the page.';return}
+ FBXLOADING=true;$('fbxHost').innerHTML='<p class="footer-note">Loading the Final Boss enzymes and vitamins questions…</p>';
+ fetch('https://itsdrdan.github.io/textbook/bank/enzymes.json').then(r=>r.json()).then(items=>{FBXI=FBX.mount($('fbxHost'),items,{topics:[['enzymes','Enzymes & Vitamins','⚙️']],storageKey:'itsdrdan-enzymes-exam-v1',onAnswer:examAnswer});const s=$('fbxHost').querySelector('.fbx-tsel');if(s)s.hidden=true}).catch(e=>{console.error(e);$('fbxHost').textContent='Exam Practice could not load the question bank. Check your connection and reload.'}).finally(()=>FBXLOADING=false)}
+function examAnswer(item,correct,info){
+ try{if(window.ddTrack)ddTrack({game:'enzymes',course:'3B',mode:'Exam Practice',topic:info.topic,correct:!!correct})}catch(e){}
+ if(correct){state.correct++;state.streak++;awardXP(false);confetti();mascot(state.streak>=3?'wow':'happy',3500)}else{state.assisted++;state.streak=0;awardXP(true);mascot('hmm',2600)}
+ updateStats()}
+
+/* ===== boot ===== */
+$('checkBtn').onclick=check;$('hintBtn').onclick=hint;$('showBtn').onclick=show;$('nextBtn').onclick=nextQ;
+$('journeyReset').onclick=()=>{if(confirm('Reset your XP, badges and streaks in this browser?')){journey=jBlank();jSave();renderJourney();toast('Progress reset')}};
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!state.done&&state.mode!=='exam'&&!(e.target&&e.target.tagName==='BUTTON'))check()});
+try{const m=new URLSearchParams(location.search).get('mode');if(m&&GEN[m]||m==='exam')state.mode=m}catch{}
+mascot('normal');buildModes();renderJourney();nextQ();
+</script>
+</body></html>
