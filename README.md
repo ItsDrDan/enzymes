@@ -7,4 +7,4 @@ Study game for CHEM 3B Chapter 11, matched to the Lecture 23–24 enzyme slides.
 - `ASSETS.md`: the art list (mascot Enzo, logo, badges). Stand-ins show until the files exist.
 - Links: `?topic=six,names` opens topics directly; the old `?mode=cls|inh|plot|vit|reg|exam` links still work.
 
-Game design and chemistry by ItsDrDan. Code written with AI assistance (Claude) and checked by the author. CC BY-NC-SA 4.0.
+Game design and chemistry by ItsDrDan. Code written with AI assistance (Claude) and checked by the author. © ItsDrDan, all rights reserved; free to play, reuse by permission only (see LICENSE).
