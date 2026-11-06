@@ -671,12 +671,12 @@ function classWhy(picked, correct, name, rxn) {
   const special = {
     'Hydrolase>Lyase': /H_2O/.test(rxn) ? 'Water is added to or removed from one molecule here; it does not split a molecule into two pieces. That is a lyase (a hydratase or dehydratase).' : 'No water is used to split anything. A small molecule is removed, which makes this a lyase.',
     'Lyase>Hydrolase': 'Water is a reactant that splits the substrate into smaller pieces. That is hydrolysis.',
-    'Lyase>Ligase': 'CO_2 is being joined on, and ATP pays for it. CARBOXYlases are ligases; DEcarboxylases (removing CO_2) are lyases.',
+    'Lyase>Ligase': /carboxylase/i.test(name) ? 'CO_2 is being joined on, and ATP pays for it. CARBOXYlases are ligases; DEcarboxylases (removing CO_2) are lyases.' : 'Two molecules are joined into one, and ATP pays for it. That is a ligase (a synthetase); a lyase never uses ATP.',
     'Transferase>Ligase': 'ATP is spent as energy to join two molecules. That is a ligase (synthetase or carboxylase).',
     'Ligase>Transferase': /kinase/i.test(name) ? 'ATP gives its phosphate group to the substrate. Handing a group over is a transfer: kinases are transferases.' : /synthase/i.test(name) ? 'No ATP is spent here: an acetyl group is transferred. A synthASE that uses no ATP is classified as a transferase.' : 'A group is moved from one molecule to another; no ATP is used to join them.',
-    'Transferase>Oxidoreductase': 'NAD^+ or FAD is picking up hydrogen (being reduced) while the substrate is oxidized. That is a redox reaction.',
-    'Isomerase>Oxidoreductase': 'The coenzyme gains hydrogen and the substrate loses it. Look for NAD^+/NADH or FAD/FADH_2.',
-    'Hydrolase>Oxidoreductase': 'Water is a product here, but the key is that O_2 or H_2O_2 is reduced: that makes it redox.',
+    'Transferase>Oxidoreductase': 'A coenzyme (NAD^+/NADH, NADPH or FAD) or O_2 gains or loses hydrogen while the substrate is oxidized or reduced. That is a redox reaction, not a group transfer.',
+    'Isomerase>Oxidoreductase': 'The formula changes: two H (or electrons) move between the substrate and a coenzyme or O_2. Look for NAD^+/NADH, NADPH, FAD/FADH_2 or O_2.',
+    'Hydrolase>Oxidoreductase': 'No water splits the substrate here. Hydrogen (or electrons) moves between the substrate and NAD^+/NADH, NADPH, FAD, O_2 or H_2O_2: that makes it redox.',
     'Isomerase>Lyase': 'The formula changes: a small molecule leaves or adds. An isomerase keeps the same formula.',
     'Lyase>Isomerase': 'Nothing is added or removed: the same atoms are just rearranged.'
   }[pair];
