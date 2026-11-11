@@ -488,7 +488,7 @@ function inhSVG(kind) {
   if (kind === 'feedback') g = body(squeezed) + reg(300, 150, '#9fe0c4', 'D') + subPiece(180, 42, SUBC, 'A') + X(222, 70) + `<text x="300" y="196" text-anchor="middle" class="cap">end product</text>`;
   if (kind === 'positive') g = `<path d="M100 90H150V128H210V90H260Q300 90 300 128V134A16 16 0 0 0 300 166V172Q300 210 260 210H100Q60 210 60 172V128Q60 90 100 90Z" fill="${EBODY}" stroke="${INK}" stroke-width="3.5"/>` + reg(300, 150, '#9fe0c4', 'R') + subPiece(180, 86) + OK(244, 70);
   if (kind === 'negative') g = body(squeezed) + reg(300, 150, '#f6b3c2', 'R') + subPiece(180, 42) + X(222, 70);
-  return `<svg class="dgm" viewBox="0 0 360 240" role="img" aria-label="${kind} enzyme picture">${g}</svg>`;
+  return `<svg class="dgm" viewBox="0 0 360 240" role="img" aria-label="Enzyme diagram for this question">${g}</svg>`;
 }
 
 function pathwaySVG(withArrow, hit) {
