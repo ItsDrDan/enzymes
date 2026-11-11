@@ -1076,6 +1076,48 @@ function genStructs() {
 }
 
 /* ===================== topic table ===================== */
+/* ===== Classify Vitamins (student feedback: "more vitamins and classifying each one") ===== */
+const VITS = [
+  { L: 'Vitamin A', nm: 'retinol', g: 'fat', r: 'vision' }, { L: 'Vitamin D', nm: 'cholecalciferol', g: 'fat', r: 'hormone' },
+  { L: 'Vitamin E', nm: 'tocopherol', g: 'fat', r: 'antiox' }, { L: 'Vitamin K', nm: 'phylloquinone', g: 'fat', r: 'clot' },
+  { L: 'Vitamin C', nm: 'ascorbic acid', g: 'water', r: 'antiox' },
+  { L: 'Vitamin B1', nm: 'thiamine', g: 'b', r: 'coenz', co: 'TPP' }, { L: 'Vitamin B2', nm: 'riboflavin', g: 'b', r: 'coenz', co: 'FAD and FMN' },
+  { L: 'Vitamin B3', nm: 'niacin', g: 'b', r: 'coenz', co: 'NAD^+' }, { L: 'Vitamin B5', nm: 'pantothenic acid', g: 'b', r: 'coenz', co: 'coenzyme A' },
+  { L: 'Vitamin B6', nm: 'pyridoxine', g: 'b', r: 'coenz', co: 'PLP' }, { L: 'Vitamin B7', nm: 'biotin', g: 'b', r: 'coenz', co: 'biotin (biocytin)' },
+  { L: 'Vitamin B9', nm: 'folic acid', g: 'b', r: 'coenz', co: 'THF' }, { L: 'Vitamin B12', nm: 'cobalamin', g: 'b', r: 'coenz', co: 'methylcobalamin' }
+];
+const VG = { b: 'B vitamin: water-soluble, made into a coenzyme', water: 'Water-soluble, but not a B vitamin', fat: 'Fat-soluble (A, D, E, K)' };
+const VGWHY = { b: 'The B vitamins (B1, B2, B3, B5, B6, B7, B9, B12) are water-soluble and are made into coenzymes.', water: 'Vitamin C is the only water-soluble vitamin that is not a B vitamin.', fat: 'Only A, D, E and K are fat-soluble.' };
+const VR = { coenz: 'Made into a coenzyme for metabolism', antiox: 'Antioxidant (protects against free radicals)', vision: 'Vision (part of the light-sensing pigment in the eye)', hormone: 'Acts like a hormone to absorb calcium for bones', clot: 'Needed to make blood-clotting factors' };
+const vlab = v => `${v.L} (${v.nm})`;
+const isWater = v => v.g !== 'fat';
+const roleWhy = v => v.r === 'coenz' ? `${v.L} (${v.nm}) is made into the coenzyme ${fm(v.co)}.` : v.r === 'antiox' ? (v.L === 'Vitamin C' ? 'Vitamin C is a water-soluble antioxidant (and is also needed to make collagen).' : 'Vitamin E is a fat-soluble antioxidant that protects cell membranes.') : v.r === 'vision' ? 'Vitamin A (retinol) is used to make the light-sensing pigment in the eye.' : v.r === 'hormone' ? 'Vitamin D works like a hormone: it helps the gut absorb calcium and phosphorus for bones.' : 'Vitamin K is needed to make blood-clotting factors.';
+const vsBag = bag([].concat(VITS.map(v => ['name', v]), VITS.map(v => ['rev', v]), VITS.map(v => ['group', v]), VITS.filter(v => v.r !== 'coenz').concat(VITS.filter(v => v.r === 'coenz').slice(0, 4)).map(v => ['role', v]), [['odd', 'fat'], ['odd', 'water'], ['odd', 'fat'], ['odd', 'water'], ['list', 'fat'], ['list', 'water'], ['list', 'fat'], ['list', 'water']]));
+function genVitSort() {
+  const [k, v] = vsBag();
+  if (k === 'name') { const others = shuffle(VITS.filter(x => x !== v)).slice(0, 3);
+    return mcq({ topic: 'vitsort', tag: 'Letter → name', prompt: `What is the chemical name of <b>${v.L}</b>?`, right: v.nm, wrongs: others.map(x => [x.nm, `${x.nm[0].toUpperCase() + x.nm.slice(1)} is ${x.L}.`, 'vitsort:name']), grid: true, solution: `${v.L} = <b>${v.nm}</b>.`, hint: 'B1 thiamine, B2 riboflavin, B3 niacin, B5 pantothenic acid, B6 pyridoxine, B7 biotin, B9 folic acid, B12 cobalamin; A retinol, C ascorbic acid, D cholecalciferol, E tocopherol, K phylloquinone.' }); }
+  if (k === 'rev') { const others = shuffle(VITS.filter(x => x !== v)).slice(0, 3);
+    return mcq({ topic: 'vitsort', tag: 'Name → letter', prompt: `<b>${v.nm[0].toUpperCase() + v.nm.slice(1)}</b> is which vitamin?`, right: v.L, wrongs: others.map(x => [x.L, `${x.L} is ${x.nm}.`, 'vitsort:name']), grid: true, solution: `${v.nm[0].toUpperCase() + v.nm.slice(1)} is <b>${v.L}</b>.`, hint: 'Some names give a clue: ascorbic acid prevents scurvy, “retin-” points to the retina, “cobal-” means it contains cobalt.' }); }
+  if (k === 'group') { const keys = ['b', 'water', 'fat']; const shown = Math.random() < .5 ? `<b>${v.L}</b>` : `<b>${v.nm[0].toUpperCase() + v.nm.slice(1)}</b> (${v.L})`;
+    return mcq({ topic: 'vitsort', tag: 'Sort the vitamin', prompt: `Which group does ${shown} belong to?`, right: VG[v.g], wrongs: keys.filter(x => x !== v.g).map(x => [VG[x], `${VGWHY[x]} ${v.L} belongs in a different group. ${VGWHY[v.g]}`, 'vitsort:group-' + x]), keep: keys.map(x => VG[x]), solution: `${v.L} (${v.nm}): <b>${VG[v.g]}</b>. ${VGWHY[v.g]}`, hint: 'Fat-soluble: A, D, E, K. Everything else is water-soluble, and all the B vitamins become coenzymes.' }); }
+  if (k === 'role') { const wrongR = shuffle(Object.keys(VR).filter(r => r !== v.r)).slice(0, 3);
+    const whoHas = r => VITS.filter(x => x.r === r).map(x => x.r === 'coenz' ? 'the B vitamins' : x.L).filter((x, i, a) => a.indexOf(x) === i).join(' and ');
+    return mcq({ topic: 'vitsort', tag: 'Main job', prompt: `What is the main job of <b>${vlab(v)}</b>?`, right: VR[v.r], wrongs: wrongR.map(r => [VR[r], `That is the job of ${whoHas(r)}.`, 'vitsort:role']), solution: roleWhy(v), hint: 'B vitamins → coenzymes. C and E → antioxidants. A → vision. D → calcium for bones. K → clotting.' }); }
+  if (k === 'odd') { const fatV = VITS.filter(x => x.g === 'fat'), watV = VITS.filter(x => x.g !== 'fat');
+    const three = shuffle(v === 'fat' ? fatV : watV).slice(0, 3), odd = shuffle(v === 'fat' ? watV : fatV)[0];
+    const kind = v === 'fat' ? 'fat-soluble' : 'water-soluble', oddKind = v === 'fat' ? 'water-soluble' : 'fat-soluble';
+    return mcq({ topic: 'vitsort', tag: 'Odd one out', prompt: 'Which vitamin does <b>not</b> belong with the other three?', right: vlab(odd), wrongs: three.map(x => [vlab(x), `${x.L} is ${kind}, like the other two. The odd one out is ${odd.L}, which is ${oddKind}.`, 'vitsort:odd']), grid: true, solution: `${three.map(x => x.L).join(', ')} are all <b>${kind}</b>; <b>${odd.L}</b> is ${oddKind}.`, hint: 'Sort each one: is it A, D, E or K (fat-soluble), or a B vitamin or C (water-soluble)?' }); }
+  // 'list': which list contains only fat- (or water-) soluble vitamins?
+  const want = v === 'fat' ? VITS.filter(x => x.g === 'fat') : VITS.filter(x => x.g !== 'fat'), other = v === 'fat' ? VITS.filter(x => x.g !== 'fat') : VITS.filter(x => x.g === 'fat');
+  const kind = v === 'fat' ? 'fat-soluble' : 'water-soluble';
+  const mk = arr => arr.map(x => x.L.replace('Vitamin ', '')).join(', ');
+  const right = shuffle(want).slice(0, 3), wrongs = [];
+  const used = new Set([mk(right)]);
+  while (wrongs.length < 3) { const base = shuffle(want).slice(0, 2), intr = shuffle(other)[0], arr = shuffle(base.concat(intr)), t = 'Vitamins ' + mk(arr); if (used.has(t)) continue; used.add(t); wrongs.push([t, `Vitamin ${intr.L.replace('Vitamin ', '')} is ${v === 'fat' ? 'water-soluble' : 'fat-soluble'}, so this list is not all ${kind}.`, 'vitsort:list']); }
+  return mcq({ topic: 'vitsort', tag: 'Sort the list', prompt: `Which list contains <b>only ${kind}</b> vitamins?`, right: 'Vitamins ' + mk(right), wrongs, grid: true, solution: `Vitamins ${mk(right)} are all <b>${kind}</b>. Fat-soluble: A, D, E, K. Water-soluble: the B vitamins and C.`, hint: 'Remember “ADEK” for the fat-soluble four.' });
+}
+
 const TOPICS = {
   terms: { label: 'Key terms', gen: genTerms, video: 'protein' },
   parts: { label: 'Label the enzyme', gen: genParts, video: 'protein' },
@@ -1096,14 +1138,15 @@ const TOPICS = {
   cofactor: { label: 'Cofactors', gen: genCofactor, video: 'protein' },
   bvit: { label: 'B vitamins → coenzymes', gen: genBvit, video: 'protein' },
   deficiency: { label: 'Deficiencies', gen: genDeficiency, video: 'protein' },
-  soluble: { label: 'Water vs fat soluble', gen: genSoluble, video: 'protein' }
+  soluble: { label: 'Water vs fat soluble', gen: genSoluble, video: 'protein' },
+  vitsort: { label: 'Classify vitamins', gen: genVitSort, video: 'protein' }
 };
 const CATEGORIES = [
   { id: 'basics', title: 'Enzyme Basics', blurb: 'Terms, active site, models, activation energy', art: 'cat-basics', fallback: 'molecule', topics: ['terms', 'parts', 'models', 'energy', 'specific'] },
   { id: 'classify', title: 'Classify Enzymes', blurb: 'The six classes, from the reaction, the name or the structures', art: 'cat-classify', fallback: 'checklist', topics: ['six', 'names', 'structs'] },
   { id: 'activity', title: 'Enzyme Activity', blurb: 'Temperature, pH and concentration graphs', art: 'cat-activity', fallback: 'heat', topics: ['plot', 'predict'] },
   { id: 'control', title: 'Inhibitors & Control', blurb: 'Inhibitors, feedback, allosteric control, zymogens', art: 'cat-control', fallback: 'target', topics: ['inhibit', 'regulate'] },
-  { id: 'vitamins', title: 'Cofactors & Vitamins', blurb: 'Metal ions, coenzymes, deficiencies', art: 'cat-vitamins', fallback: 'water', topics: ['cofactor', 'bvit', 'deficiency', 'soluble'] },
+  { id: 'vitamins', title: 'Cofactors & Vitamins', blurb: 'Metal ions, coenzymes, deficiencies, classify vitamins', art: 'cat-vitamins', fallback: 'water', topics: ['cofactor', 'bvit', 'deficiency', 'soluble', 'vitsort'] },
   { id: 'health', title: 'Health & Clinic', blurb: 'Dental hygiene, nursing, meds, lab tests', art: 'cat-health', fallback: 'medal', fbSrc: 'assets/ach-clinic.webp', topics: ['dental', 'nursing', 'labs', 'disorders'] }
 ];
 function generate(topic) { const q = TOPICS[topic].gen(); q.topic = topic; return q; }
@@ -1139,7 +1182,7 @@ const ACH = [
   ['graph', 'Graph Reader', '10 activity questions right', 'ach-graph', 'heat', P => tc(P, ['plot', 'predict']) >= 10],
   ['detective', 'Inhibitor Detective', '10 inhibitor questions right', 'ach-detective', 'target', P => tc(P, 'inhibit') >= 10],
   ['feedback', 'Feedback Loop', '5 regulation questions right', 'ach-feedback', 'equilibrium', P => tc(P, 'regulate') >= 5],
-  ['vitamin', 'Vitamin Virtuoso', '10 cofactor and vitamin questions right', 'ach-vitamin', 'water', P => tc(P, ['cofactor', 'bvit', 'deficiency', 'soluble']) >= 10],
+  ['vitamin', 'Vitamin Virtuoso', '10 cofactor and vitamin questions right', 'ach-vitamin', 'water', P => tc(P, ['cofactor', 'bvit', 'deficiency', 'soluble', 'vitsort']) >= 10],
   ['clinic', 'Clinic Ready', '10 Health & Clinic questions right', 'ach-clinic', 'medal', P => tc(P, ['dental', 'nursing', 'labs', 'disorders', 'clinic']) >= 10],
   ['chairside', 'Chairside Pro', '10 dental hygiene questions right', 'ach-chairside', 'stars', P => tc(P, 'dental') >= 10],
   ['medpass', 'Med Pass', '10 meds & nursing questions right', 'ach-medpass', 'checklist', P => tc(P, 'nursing') >= 10],
@@ -1488,7 +1531,7 @@ function init() {
   load(); bind(); wireArt(); paintIcons();
   // ?topic=terms,six  or the first version's ?mode=cls|inh|plot|vit|reg|exam
   let sp; try { sp = new URLSearchParams(location.search); } catch (e) { sp = new URLSearchParams(); }
-  const OLD = { cls: ['six', 'names', 'structs'], inh: ['inhibit'], plot: ['plot', 'predict'], vit: ['cofactor', 'bvit', 'deficiency', 'soluble'], reg: ['regulate', 'dental', 'nursing'] };
+  const OLD = { cls: ['six', 'names', 'structs'], inh: ['inhibit'], plot: ['plot', 'predict'], vit: ['cofactor', 'bvit', 'deficiency', 'soluble', 'vitsort'], reg: ['regulate', 'dental', 'nursing'] };
   const topics = (sp.get('topic') || '').split(',').filter(t => TOPICS[t]), mode = sp.get('mode');
   if (topics.length) state.sel = new Set(topics); else if (OLD[mode]) state.sel = new Set(OLD[mode]); else state.sel = new Set((P.sel || []).map(t => t === 'clinic' ? 'dental' : t).filter(t => TOPICS[t]));
   renderStats(); renderChooser(); P.rankSeen = P.rankSeen || rankOf(P.xp).name;
