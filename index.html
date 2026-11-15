@@ -98,6 +98,11 @@ table.data{margin:auto;border-collapse:collapse;font-size:1.1rem;background:#fff
 .feedback.bad{display:block;border:1px solid var(--rose-line);background:var(--rose);color:var(--rose-ink)}
 .feedback.info{display:block;border:1px solid var(--amber-line);background:var(--amber);color:var(--amber-ink)}
 .feedback .sol{margin-top:8px;padding-top:8px;border-top:1px dashed currentColor;color:var(--ink)}
+.feedback .whyall{margin-top:8px;padding-top:4px;border-top:1px dashed currentColor;color:var(--ink)}
+.feedback .whyall summary{font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}
+.feedback .whyall ul{list-style:none;margin:0;padding:0}
+.feedback .whyall li{display:flex;gap:8px;margin:0 0 8px;font-size:.97rem;line-height:1.4}
+.feedback .whyall .wa-x{color:var(--rose-ink);font-weight:700;flex:none}
 .xp-pop{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:99px;background:#fff;color:#4a3fb0;font-weight:800;font-size:.9rem}
 .actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}
 .detail{margin-top:12px;padding:12px 15px;border-radius:var(--r-md);background:#fafaff;border:1px solid var(--line)}
@@ -639,7 +644,7 @@ function genEnergy() {
   }
   if (k === 'mcChange') return mcq({ topic: 'energy', tag: 'What an enzyme changes', prompt: 'What does an enzyme change about a reaction?', right: 'It lowers the activation energy', wrongs: [['It makes the reaction release more energy', 'The energy released (ΔG) is the same with or without the enzyme.', 'energy:changes-dG'], ['It shifts the equilibrium toward products', 'A catalyst speeds up both directions equally, so the equilibrium does not move.', 'energy:changes-equilibrium'], ['It raises the temperature so molecules move faster', 'Enzymes work at body temperature; they give an easier path, not more heat.']], solution: 'An enzyme provides an alternative pathway with a <b>lower activation energy</b>. ΔG and the equilibrium position are unchanged.', hint: 'A catalyst changes the road, not the destination.' });
   if (k === 'mcHow') return mcq({ topic: 'energy', tag: 'How enzymes speed reactions', prompt: 'How does an enzyme speed up a reaction?', right: 'It provides an alternative pathway with a lower activation energy', wrongs: ['It adds energy to the reactants', 'It increases the number of reactant molecules', 'It is consumed and becomes part of the product'], solution: 'Enzymes give the reaction an easier path: more molecules have enough energy to get over the smaller hump, so the reaction goes faster.', hint: 'Think of a tunnel through a mountain.' });
-  return mcq({ topic: 'energy', tag: 'Catalysts', scenario: '<p class="scenario">With no enzyme, a reaction releases 30 kJ of energy per mole.</p>', prompt: 'How much energy does it release when an enzyme catalyzes it?', right: '30 kJ, the same amount', wrongs: [['Less than 30 kJ', 'The enzyme lowers the hump, not the energy difference between reactants and products.', 'energy:changes-dG'], ['More than 30 kJ', 'The enzyme lowers the hump, not the energy difference between reactants and products.', 'energy:changes-dG'], 'Zero, enzymes absorb the energy'], solution: 'Same: <b>30 kJ</b>. The reactants and products have the same energies with or without an enzyme, so ΔG is unchanged. Only the activation energy is lower.', hint: 'Does the enzyme change where the reaction starts or ends?' });
+  return mcq({ topic: 'energy', tag: 'Catalysts', scenario: '<p class="scenario">With no enzyme, a reaction releases 30 kJ of energy per mole.</p>', prompt: 'How much energy does it release when an enzyme catalyzes it?', right: '30 kJ, the same amount', wrongs: [['Less than 30 kJ', 'The enzyme lowers the hump, not the energy difference between reactants and products.', 'energy:changes-dG'], ['More than 30 kJ', 'The enzyme lowers the hump, not the energy difference between reactants and products.', 'energy:changes-dG'], ['Zero, enzymes absorb the energy', 'The enzyme comes out of the reaction unchanged and keeps no energy. The products still release the same 30 kJ.', 'energy:changes-dG']], solution: 'Same: <b>30 kJ</b>. The reactants and products have the same energies with or without an enzyme, so ΔG is unchanged. Only the activation energy is lower.', hint: 'Does the enzyme change where the reaction starts or ends?' });
 }
 
 const SPEC = { absolute: 'Absolute specificity', group: 'Group specificity', linkage: 'Linkage specificity', stereo: 'Stereochemical specificity' };
@@ -1503,7 +1508,7 @@ function makeQuestion() {
 }
 function newQuestion(focus) {
   const q = makeQuestion();
-  state.q = q; state.tries = 0; state.helped = false; state.done = false; state.logged = false;
+  state.q = q; state.tries = 0; state.wrongPicks = []; state.helped = false; state.done = false; state.logged = false;
   $('emptyBox').hidden = true; $('reportBox').hidden = true; $('examHost').hidden = true; $('playArea').hidden = false; $('skipBtn').hidden = false;
   const T = TOPICS[q.topic];
   $('playTitle').textContent = state.quiz ? 'Skill Check Prep' : state.sel.size > 1 ? 'Mixed practice' : T.label;
@@ -1538,7 +1543,7 @@ function choose(i) {
   const q = state.q; if (state.done) return;
   const c = q.choices[i], btn = document.querySelector(`#choices [data-choice="${i}"]`);
   if (c.ok) { btn.classList.add('right'); markRes(btn, true); grade(true, '', ''); }
-  else { btn.classList.add('wrong'); markRes(btn, false); btn.disabled = true; grade(false, c.slip, c.why || qbChoiceWhy(q, c)); }
+  else { btn.classList.add('wrong'); markRes(btn, false); btn.disabled = true; (state.wrongPicks = state.wrongPicks || []).push(i); grade(false, c.slip, c.why || qbChoiceWhy(q, c)); }
 }
 function tapHit(id, el) {
   const q = state.q; if (state.done || !q || q.kind !== 'hit') return;
@@ -1585,7 +1590,17 @@ function finishQuestion() {
   $('nextBtn').innerHTML = (state.quiz && state.quiz.i === state.quiz.plan.length - 1 ? 'See my results ' : 'Next question ') + ico('arrow');
   if (!coarse()) { try { $('nextBtn').focus({ preventScroll: true }); } catch (e) {} }
 }
-function setFeedback(kind, html) { const f = $('feedback'); f.className = 'feedback ' + kind; f.innerHTML = html; }
+/* when a choice question is over: why the right answer is right, and a reason for every other choice (Dr. Dan, 2026-11-14) */
+function whyAll(q) {
+  if (!q || q.kind !== 'choice' || !q.choices) return '';
+  const T = h => String(h || '').replace(/<[^>]+>/g, '').trim(), picked = state.wrongPicks || [];
+  const rows = q.choices.map((c, i) => { if (c.ok) return ''; const w = c.why || qbChoiceWhy(q, c); if (T(w).length < 9) return '';
+    return `<li><span class="wa-x" aria-hidden="true">✗</span><span><b>${c.html}</b>${picked.includes(i) ? ' <small>(your pick)</small>' : ''}<br>${w}</span></li>`; }).filter(Boolean);
+  return rows.length ? `<details class="whyall" open><summary>Why the other choices are wrong</summary><ul>${rows.join('')}</ul></details>` : '';
+}
+function setFeedback(kind, html) { const f = $('feedback'); f.className = 'feedback ' + kind;
+  if (state.done && state.q && state.q.kind === 'choice') html = html.replace('<div class="sol">', '<div class="sol"><b>Why it’s right:</b> ') + whyAll(state.q);
+  f.innerHTML = html; }
 function showSolution() {
   const q = state.q; if (!q || state.done) return;
   if (!state.logged) { ddLog(false, 'gave-up'); P.tried++; bumpTopic(q.topic, false); if (state.quiz) P.streak = 0; if (state.quiz) state.quiz.results.push({ topic: q.topic, tag: q.tag, ok: false }); }
