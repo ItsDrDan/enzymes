@@ -32,4 +32,31 @@ let fam={};for(let r=0;r<N;r++){const s=ctx.ebSpec();fam[s.fam]=(fam[s.fam]||0)+
  ok(s.explain.opts.some(o=>o[0]===s.explain.answer)&&s.explain.opts.filter(o=>o[0]!==s.explain.answer).every(o=>s.explain.why[o[0]]),tag+': explain feedback');
  ok(s.apply.w.length>=2&&!s.apply.w.some(w=>w[0]===s.apply.a)&&s.apply.w.every(w=>w[1]),tag+': apply choices');
  ok(!/Km|Vmax|K<sub>m|NaN|undefined/.test(JSON.stringify(s)),tag+': Km/Vmax (outside the course) or junk text');}
+
+/* ---- free play (EBX block): same model as the labs, plus enzyme amount and inhibitor amount ---- */
+{const a2=src.indexOf('/*EBX-LOGIC-START'),b2=src.indexOf('/*EBX-LOGIC-END*/');ok(a2>0&&b2>a2,'free-play logic block present');
+ vm.runInContext(src.slice(a2,b2)+'\nthis.ebxRate=ebxRate;this.ebxFree=ebxFree;this.ebxNotes=ebxNotes;this.EBX_GOALS=EBX_GOALS;this.EBX_ENZ=EBX_ENZ;',ctx);
+ const R=st=>ctx.ebxRate(st),B={S:20,e:1,inh:null,amt:0,T:37,pH:7,opt:7};
+ /* matches the lab model wherever the labs can go (normal enzyme, inhibitor amount 2 = the labs' inhibitor) */
+ for(const T of [0,10,20,37,45,55,70])for(const pH of [0,2,7,8,14])for(const opt of [2,7,8])for(const S of [0,1,5,10,20])for(const inh of [null,'comp','nonc']){checks++;
+  const lab=A({T,pH,opt,S,inh}),fp=R({T,pH,opt,S,inh,amt:inh?2:0,e:1});if(Math.abs(Math.round(fp)-lab)>0){fails++;if(fails<30)console.log('FAIL free play differs from lab',T,pH,opt,S,inh,fp,lab)}}
+ ok(Math.abs(R({...B,e:3})-2*R(B))<1e-9&&Math.abs(R({...B,e:0})-R(B)/2)<1e-9,'enzyme amount scales the rate');
+ ok(R({...B,e:3})>=180&&R({...B,e:3})<=200,'double enzyme reaches about 200%');
+ for(let amt=1;amt<=4;amt++){ok(R({...B,inh:'comp',amt,S:2})<R({...B,inh:'comp',amt:amt-1,S:2}),'more competitive inhibitor lowers the low-substrate rate');
+  ok(R({...B,inh:'nonc',amt})<R({...B,inh:'nonc',amt:amt-1}),'more noncompetitive inhibitor lowers the top rate');
+  ok(R({...B,inh:'comp',amt:4})>=0.75*R(B),'substrate out-competes even a lot of competitive inhibitor');}
+ ok(R({...B,inh:'nonc',amt:4})<=0.4*R(B),'a lot of noncompetitive inhibitor keeps the top rate low');
+ ok(R({...B,inh:'comp',amt:0})===R(B)&&R({...B,inh:'nonc',amt:0})===R(B),'zero inhibitor = no effect');
+ /* every goal can be reached, and none is reached at body conditions with low substrate */
+ const start={S:5,e:1,inh:null,amt:2,T:37,pH:7,opt:7};
+ const wins={double:{...B,e:3},sat:{...B,S:15},beat:{...B,inh:'comp',amt:4},nonc:{...B,inh:'nonc',amt:2},denat:{...B,T:37,dead:true},pepsin:{...B,opt:2,pH:2}};
+ for(const [id,,t] of ctx.EBX_GOALS){ok(wins[id]&&t(wins[id]),'goal reachable: '+id);ok(!t(start),'goal not met at the start: '+id);}
+ ok(!ctx.EBX_GOALS.find(g=>g[0]==='beat')[2]({...B,inh:'comp',amt:4,S:2}),'beat needs lots of substrate');
+ /* notes: say denatured only when hot, slow only when cold, never Km/Vmax; never empty */
+ let nn=0;for(const T of [0,15,25,37,44,45,60])for(const pH of [0,2,5,7,8,11,14])for(const opt of [2,7,8])for(const S of [0,3,12,20])for(const inh of [null,'comp','nonc'])for(const amt of [0,2,4])for(const e of [0,1,3]){
+  const st={T,pH,opt,S,inh,amt,e},n=ctx.ebxNotes(st).join(' ');nn++;
+  if(/denatured/.test(n)!==(T>=45)||/collide less often/.test(n)!==(T<=25)||/Km|Vmax|NaN|undefined/.test(n)||!n){checks++;fails++;if(fails<30)console.log('FAIL notes',JSON.stringify(st),n)}else checks++;
+  if(inh&&amt&&S>0){checks++;if(!/inhibitor/.test(n)){fails++;if(fails<30)console.log('FAIL inhibitor note missing',JSON.stringify(st))}}}
+ ok(R({...B,dead:true})===0&&R({...B,dead:true,T:37,e:3})===0,'a denatured enzyme stays at 0 after cooling');ok(/Fresh enzyme/.test(ctx.ebxNotes({...B,dead:true}).join('')),'dead note offers a fresh enzyme');ok(vm.runInContext('EBX_DEAD_T',ctx)===45,'denatures at 45 °C, same line the labs use');
+ console.log('free play: '+nn+' settings checked');}
 console.log(checks+' checks; '+N+' bench questions '+JSON.stringify(fam)+': '+(fails?fails+' FAILED':'all passed'));process.exit(fails?1:0);
