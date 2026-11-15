@@ -1170,7 +1170,14 @@ const EB_ENZ={pepsin:{opt:2,home:'the stomach'},trypsin:{opt:8,home:'the small i
 const EB_UP='Activity goes up',EB_DOWN='Activity goes down',EB_SAME='Activity stays about the same';
 const ebTrend=(a,b)=>Math.abs(b-a)<8?EB_SAME:b>a?EB_UP:EB_DOWN;
 const EB_X={temp:{key:'T',label:'Temperature',unit:'°C',min:0,max:70,step:1},pH:{key:'pH',label:'pH',unit:'',min:0,max:14,step:1},sub:{key:'S',label:'Amount of substrate',unit:'',min:0,max:20,step:1},inh:{key:'S',label:'Amount of substrate',unit:'',min:0,max:20,step:1}};
-function ebSpec(fam,o){o=o||{};fam=fam||['temp','temp','pH','sub','inh'][Math.floor(Math.random()*5)];const pk=a=>a[Math.floor(Math.random()*a.length)];
+/* Inside a textbook box (iframe), a ?topic= link opens at the question, not the title banner (2026-11-14) */
+/* ?view=lab: compact view for a textbook box. Shows only the demo (and whatever it needs) plus a link to the full game,
+   so the box can stay short on a phone and the student can still scroll the textbook page around it (2026-11-14). */
+function ddLabView(keep){try{if(new URLSearchParams(location.search).get('view')!=='lab')return false;const ks=keep.map(k=>typeof k==='string'?document.getElementById(k):k).filter(Boolean);if(!ks.length)return false;const need=new Set();ks.forEach(k=>{for(let e=k;e&&e!==document.body;e=e.parentElement)need.add(e)});need.forEach(e=>{const p=e.parentElement;if(!p)return;[...p.children].forEach(c=>{if(need.has(c)||/^(SCRIPT|STYLE|DIALOG|CANVAS|TEMPLATE|LINK|NOSCRIPT)$/.test(c.tagName)||getComputedStyle(c).position==='fixed')return;c.setAttribute('data-dd-labhide','')})});const st=document.createElement('style');st.textContent='[data-dd-labhide]{display:none!important}.dd-labbar{display:flex;justify-content:flex-end;padding:4px 10px 0;font:600 14px/1.4 system-ui,-apple-system,sans-serif}.dd-labbar a{color:inherit;text-decoration:underline}';document.head.appendChild(st);document.documentElement.classList.add('dd-labview');const u=new URL(location.href);u.searchParams.delete('view');const bar=document.createElement('div');bar.className='dd-labbar';const a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener';a.textContent='Open the full game ↗';bar.appendChild(a);document.body.insertBefore(bar,document.body.firstChild);window.scrollTo(0,0);return true}catch(e){return false}}
+function ddJumpTo(get){let moved=false;const stop=()=>{moved=true};['wheel','touchstart','keydown','pointerdown'].forEach(t=>addEventListener(t,stop,{once:true,passive:true}));const go=()=>{if(moved||document.documentElement.classList.contains('dd-labview'))return;const el=get();if(el)window.scrollTo({top:Math.max(0,el.getBoundingClientRect().top+window.scrollY-8),behavior:'instant'})};requestAnimationFrame(()=>requestAnimationFrame(go));if(document.readyState!=='complete')addEventListener('load',()=>setTimeout(go,50),{once:true});setTimeout(go,700)}
+/* ?topic=bench&fam=temp,pH,sub (or inh): textbook links pick which bench families appear (2026-11-14) */
+let EB_FAMS=[];
+function ebSpec(fam,o){o=o||{};fam=fam||(EB_FAMS.length?EB_FAMS[Math.floor(Math.random()*EB_FAMS.length)]:['temp','temp','pH','sub','inh'][Math.floor(Math.random()*5)]);const pk=a=>a[Math.floor(Math.random()*a.length)];
  const base={T:37,pH:7,opt:7,S:20,inh:null};let start,target,enzyme='a typical body enzyme',ex,apply,predict;
  if(fam==='temp'){const [t0,t1]=o.pair||pk([[20,37],[37,10],[37,60],[37,55]]);start={...base,T:t0};target=t1;
   const cold=t1<t0,heat=t1>45;
@@ -1773,7 +1780,12 @@ function init() {
   if (topics.length) state.sel = new Set(topics); else if (OLD[mode]) state.sel = new Set(OLD[mode]); else state.sel = new Set((P.sel || []).map(t => t === 'clinic' ? 'dental' : t).filter(t => TOPICS[t]));
   renderStats(); renderChooser(); P.rankSeen = P.rankSeen || rankOf(P.xp).name;
   setVideoFor('protein');
+  EB_FAMS = (sp.get('fam') || '').split(',').filter(f => ['temp', 'pH', 'sub', 'inh'].includes(f));
   if (mode === 'exam') enterExam(); else if (state.sel.size) newQuestion(); else showEmpty();
+  if (topics.length && window.parent !== window && sp.get('explore') !== '1') ddJumpTo(() => $('play'));
+  ddLabView(sp.get('explore') === '1' ? ['ebExplore'] : ['play', 'ebExplore']);
+  /* ?explore=1 opens Enzyme Bench free play and scrolls this page (not the host page) to it */
+  if (sp.get('explore') === '1') { const d = $('ebExplore'); d.open = true; if (!document.getElementById('ebxView')) renderExplore(); ddJumpTo(() => $('ebExplore')); }
   setTimeout(() => { paintIcons(); }, 400);
   window.addEventListener('load', () => paintIcons());
 }
